@@ -1,0 +1,26 @@
+/*
+ * Theme: Display/Monitor Layout Manager
+ * Base:  list-menu
+ * Overrides: 1-column 8-line list with icons and mode-switcher
+ *   disabled for selecting monitor configurations.
+ * Binding: $mod+Shift+m
+ * Script:  rofi-display.sh
+ */
+@import "shared/list-menu"
+
+listview {
+    columns: 1;
+    lines: 8;
+}
+
+element-icon {
+    enabled: false;
+}
+
+textbox-prompt-colon {
+    str: " ";
+}
+
+mode-switcher {
+    enabled: false;
+}

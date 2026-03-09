@@ -1,0 +1,265 @@
+/*
+ * List Menu - Base Theme for Vertical List Menus
+ * ─────────────────────────────────────────────────────────────
+ * This is the shared base theme for rofi menus that present a vertical
+ * scrollable list (app launcher, SSH selector, window switcher, etc.).
+ * Child themes can @import this file and override individual properties.
+ *
+ * === The "Blur Trick" Architecture ===
+ *
+ * The visual effect relies on a two-layer compositing trick:
+ *
+ *   1. OUTER LAYER (window) - Goes fullscreen and fills the entire
+ *      screen with cm-base-overlay, a semi-transparent dark color
+ *      (alpha ~58%). Because this window is transparent, picom's
+ *      dual_kawase blur backend kicks in and blurs whatever is on
+ *      the desktop behind it. The result is a frosted-glass dimming
+ *      of the entire screen.
+ *
+ *   2. INNER LAYER (mainbox children) - The actual UI elements
+ *      (inputbar, listview, mode-switcher) use fully opaque solid
+ *      backgrounds (cm-mantle, cm-base). This keeps text crisp and
+ *      readable -- the blur only shows around the content, not
+ *      behind it.
+ *
+ * Without the fullscreen transparent window, rofi would just render
+ * a floating box and you would lose the immersive blurred backdrop.
+ * Without the opaque inner backgrounds, text would be unreadable
+ * on top of the blurred desktop image.
+ *
+ * === Layout Hierarchy ===
+ *
+ *   window                      (fullscreen, semi-transparent overlay)
+ *   └── mainbox                 (centers content via large padding)
+ *       ├── inputbar            (search bar at the top)
+ *       │   ├── textbox-prompt  (icon/prompt glyph)
+ *       │   └── entry           (text input field)
+ *       ├── listview            (scrollable list of results)
+ *       │   ├── element         (each row: icon + text)
+ *       │   └── scrollbar
+ *       └── mode-switcher       (tabs at the bottom: Apps, Run, SSH...)
+ *           └── button          (one per mode)
+ *
+ * === Import Chain ===
+ *
+ * This file imports catppuccin-mocha.rasi (colors) and settings.rasi
+ * (resets) first. Any child theme that imports this file gets the full
+ * stack: palette -> resets -> list-menu layout. The child theme then
+ * only needs to override the properties it wants to change.
+ *
+ * === Overriding in Child Themes ===
+ *
+ * Child themes (e.g., a clipboard-history picker) can @import this
+ * file and then redefine individual selectors. For example, a child
+ * might change `listview { lines: 12; }` to show more rows, or
+ * override `element selected.normal` to use a different accent color.
+ * Rofi applies properties in import order, so later definitions win.
+ */
+
+/* Import shared foundations:
+ *   catppuccin-mocha  -> color palette (cm-* variables)
+ *   settings          -> global resets (font, zeroed spacing, transparent bg) */
+@import "catppuccin-mocha"
+@import "settings"
+
+/* ── Fullscreen blurred overlay ──────────────────────────── */
+/* The window covers the entire screen. Its semi-transparent background
+ * triggers picom's blur pass on the desktop beneath, creating the
+ * frosted-glass effect. "real" transparency tells rofi to use an ARGB
+ * visual so the alpha channel is actually honored by the compositor. */
+window {
+    fullscreen:         true;
+    transparency:       "real";
+    background-color:   @cm-base-overlay;
+    cursor:             "default";
+}
+
+/* ── Centered content box ────────────────────────────────── */
+/* Large symmetric padding pushes the children into the center of the
+ * screen. The mainbox itself is transparent so the blurred overlay
+ * shows through the gaps between its children. */
+mainbox {
+    padding:            28% 28%;
+    background-color:   transparent;
+    children:           [ "inputbar", "listview", "mode-switcher" ];
+}
+
+/* ── Input Bar (top, solid mantle) ───────────────────────── */
+/* The search bar sits at the top of the content box. It uses a solid
+ * cm-mantle background so text is fully readable (no blur underneath).
+ * Top-only border-radius gives the content block its rounded top edge. */
+inputbar {
+    padding:            14px 18px;
+    spacing:            12px;
+    background-color:   @cm-mantle;
+    border-radius:      12px 12px 0 0;
+    children:           [ "textbox-prompt-colon", "entry" ];
+}
+
+/* Prompt icon (Nerd Font search glyph) -- fixed width so the entry
+ * field alignment stays consistent regardless of icon width. */
+textbox-prompt-colon {
+    expand:             false;
+    str:                " ";
+    text-color:         @cm-mauve;
+    background-color:   transparent;
+    vertical-align:     0.5;
+}
+
+/* Text input field where the user types their query. */
+entry {
+    placeholder:        "Type to search...";
+    placeholder-color:  @cm-overlay0;
+    text-color:         @cm-text;
+    background-color:   transparent;
+    cursor:             text;
+    vertical-align:     0.5;
+}
+
+/* ── List View (center, solid base) ──────────────────────── */
+/* The main results area. Uses an opaque cm-base background to keep
+ * text sharp over the blurred desktop. fixed-height prevents the
+ * list from resizing as results change, avoiding layout jitter. */
+listview {
+    columns:            1;
+    lines:              8;
+    cycle:              true;
+    dynamic:            false;
+    scrollbar:          true;
+    layout:             vertical;
+    fixed-height:       true;
+    spacing:            4px;
+    padding:            8px;
+    background-color:   @cm-base;
+    cursor:             "default";
+}
+
+/* Thin scrollbar track along the right edge of the listview. */
+scrollbar {
+    handle-width:       4px;
+    handle-color:       @cm-overlay0;
+    border-radius:      4px;
+    background-color:   @cm-surface0;
+    margin:             0 0 0 4px;
+}
+
+/* ── Elements ────────────────────────────────────────────── */
+/* Each row in the list. Three states matter: normal (default),
+ * urgent (flagged items), and active (currently running apps).
+ * Rofi alternates "normal" and "alternate" rows for zebra-striping
+ * potential, but here they share the same style for a clean look. */
+element {
+    spacing:            12px;
+    padding:            8px 12px;
+    border-radius:      8px;
+    background-color:   transparent;
+    cursor:             pointer;
+}
+
+element normal.normal,
+element alternate.normal {
+    background-color:   transparent;
+    text-color:         @cm-text;
+}
+
+element normal.urgent,
+element alternate.urgent {
+    background-color:   transparent;
+    text-color:         @cm-red;
+}
+
+element normal.active,
+element alternate.active {
+    background-color:   transparent;
+    text-color:         @cm-green;
+}
+
+/* Selected row: highlighted with a left accent border (mauve)
+ * and a subtle surface background to clearly indicate focus. */
+element selected.normal {
+    background-color:   @cm-surface0;
+    text-color:         @cm-mauve;
+    border:             0 0 0 3px solid;
+    border-color:       @cm-mauve;
+}
+
+element selected.urgent {
+    background-color:   @cm-red;
+    text-color:         @cm-crust;
+}
+
+element selected.active {
+    background-color:   @cm-green;
+    text-color:         @cm-crust;
+}
+
+/* Application icon next to the element text. */
+element-icon {
+    size:               24px;
+    background-color:   transparent;
+    cursor:             inherit;
+    vertical-align:     0.5;
+}
+
+/* Label text for each element. Inherits text-color from the
+ * parent element so selected/urgent/active states propagate. */
+element-text {
+    background-color:   transparent;
+    text-color:         inherit;
+    cursor:             inherit;
+    vertical-align:     0.5;
+    horizontal-align:   0.0;
+}
+
+/* ── Mode Switcher (bottom, solid mantle) ────────────────── */
+/* Tab bar at the bottom of the content block, letting the user switch
+ * between modes (Apps, Run, SSH, etc.). Bottom-only border-radius
+ * gives the content block its rounded bottom edge, completing the
+ * rounded-rectangle appearance together with the inputbar's top radius. */
+mode-switcher {
+    spacing:            8px;
+    padding:            8px;
+    background-color:   @cm-mantle;
+    border-radius:      0 0 12px 12px;
+}
+
+/* Individual mode tab. */
+button {
+    padding:            8px 0;
+    border-radius:      8px;
+    background-color:   transparent;
+    text-color:         @cm-subtext0;
+    cursor:             pointer;
+    horizontal-align:   0.5;
+}
+
+/* Active mode tab: highlighted with a bottom underline border. */
+button selected {
+    background-color:   @cm-surface0;
+    text-color:         @cm-mauve;
+    border:             0 0 2px 0 solid;
+    border-color:       @cm-mauve;
+}
+
+/* ── Message ─────────────────────────────────────────────── */
+/* Optional message area, used for informational text or error display. */
+message {
+    padding:            10px 14px;
+    background-color:   @cm-mantle;
+}
+
+textbox {
+    background-color:   transparent;
+    text-color:         @cm-subtext1;
+    vertical-align:     0.5;
+    horizontal-align:   0.0;
+}
+
+/* Error messages get a red border to stand out from normal messages. */
+error-message {
+    padding:            14px;
+    background-color:   @cm-mantle;
+    border:             2px solid;
+    border-color:       @cm-red;
+    border-radius:      10px;
+}

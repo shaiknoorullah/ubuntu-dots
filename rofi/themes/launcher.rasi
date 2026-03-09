@@ -1,0 +1,22 @@
+/*
+ * Theme: App Launcher (run, window, ssh, filebrowser)
+ * Base:  list-menu
+ * Overrides: 2-column 9-line grid with 28px icons and mode-switcher
+ *   enabled, allowing tab-switching between modes.
+ * Bindings: $mod+d (run), $mod+Shift+d (drun), $mod+Tab (window),
+ *   $mod+Shift+s (ssh), $mod+Shift+f (filebrowser)
+ */
+@import "shared/list-menu"
+
+listview {
+    columns: 2;
+    lines: 9;
+}
+
+element-icon {
+    size: 28px;
+}
+
+mode-switcher {
+    enabled: true;
+}

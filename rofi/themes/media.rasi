@@ -1,0 +1,18 @@
+/*
+ * Theme: Media Controls (prev, play/pause, next, shuffle, loop)
+ * Base:  option-menu
+ * Overrides: 5 horizontal icon columns with large 42px Nerd Font
+ *   glyphs for MPRIS media control actions.
+ * Binding: $mod+m
+ * Script:  rofi-media.sh
+ */
+@import "shared/option-menu"
+
+listview {
+    columns: 5;
+    lines: 1;
+}
+
+element-text {
+    font: "JetBrainsMono Nerd Font 42";
+}

@@ -1,0 +1,54 @@
+/*
+ * Catppuccin Mocha - Color Palette Definition
+ * ─────────────────────────────────────────────────────────────
+ * Central color palette for the entire rofi theme system.
+ * Every theme file imports this to get consistent colors.
+ *
+ * All color variables use the "cm-" prefix (short for Catppuccin Mocha)
+ * to avoid name collisions with rofi's built-in properties and any
+ * third-party theme fragments. This namespacing means you can safely
+ * @import this file alongside other rasi files without worrying about
+ * a variable called "text" or "blue" clashing with something else.
+ *
+ * The palette follows the official Catppuccin Mocha spec:
+ *   https://github.com/catppuccin/catppuccin
+ *
+ * At the bottom, "cm-base-overlay" is an alpha variant of the base color.
+ * It is used as the background of the fullscreen rofi window. Because it
+ * is semi-transparent (alpha ~58%, hex 95), it allows the desktop beneath
+ * to show through. This is intentional: picom's dual_kawase blur backend
+ * detects the transparent region and applies a gaussian blur to whatever
+ * is behind it, producing the frosted-glass effect. Without this alpha
+ * channel, picom would see a fully opaque window and skip the blur pass.
+ */
+* {
+    cm-rosewater:   #F5E0DC;
+    cm-flamingo:    #F2CDCD;
+    cm-pink:        #F5C2E7;
+    cm-mauve:       #CBA6F7;
+    cm-red:         #F38BA8;
+    cm-maroon:      #EBA0AC;
+    cm-peach:       #FAB387;
+    cm-yellow:      #F9E2AF;
+    cm-green:       #A6E3A1;
+    cm-teal:        #94E2D5;
+    cm-sky:         #89DCEB;
+    cm-sapphire:    #74C7EC;
+    cm-blue:        #89B4FA;
+    cm-lavender:    #B4BEFE;
+    cm-text:        #CDD6F4;
+    cm-subtext1:    #BAC2DE;
+    cm-subtext0:    #A6ADC8;
+    cm-overlay2:    #9399B2;
+    cm-overlay1:    #7F849C;
+    cm-overlay0:    #6C7086;
+    cm-surface2:    #585B70;
+    cm-surface1:    #45475A;
+    cm-surface0:    #313244;
+    cm-base:        #1E1E2E;
+    cm-mantle:      #181825;
+    cm-crust:       #11111B;
+
+    /* Alpha variant for fullscreen dim overlay */
+    cm-base-overlay: #1E1E2E95;
+}

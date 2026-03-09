@@ -1,0 +1,27 @@
+/*
+ * Theme: Web Search with Engine Selection
+ * Base:  list-menu
+ * Overrides: 1-column 8-line dynamic list that adjusts to the number
+ *   of search engines; icons and mode-switcher disabled.
+ * Binding: $mod+slash
+ * Script:  rofi-websearch.sh
+ */
+@import "shared/list-menu"
+
+listview {
+    columns: 1;
+    lines: 8;
+    dynamic: true;
+}
+
+element-icon {
+    enabled: false;
+}
+
+textbox-prompt-colon {
+    str: "󰖟 ";
+}
+
+mode-switcher {
+    enabled: false;
+}

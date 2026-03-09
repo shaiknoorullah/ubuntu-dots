@@ -1,0 +1,30 @@
+/*
+ * Theme: Emoji Picker (rofimoji)
+ * Base:  list-menu
+ * Overrides: 5-column 6-line grid with center-aligned text for a
+ *   compact emoji grid; icons and mode-switcher disabled.
+ * Binding: $mod+period
+ * Invoked: rofimoji --selector-args="-theme emoji"
+ */
+@import "shared/list-menu"
+
+listview {
+    columns: 5;
+    lines: 6;
+}
+
+element-icon {
+    enabled: false;
+}
+
+element-text {
+    horizontal-align: 0.5;
+}
+
+textbox-prompt-colon {
+    str: "󰞅 ";
+}
+
+mode-switcher {
+    enabled: false;
+}

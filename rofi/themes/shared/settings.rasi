@@ -1,0 +1,33 @@
+/*
+ * Global Reset / Defaults
+ * ─────────────────────────────────────────────────────────────
+ * This file is imported by every theme to establish a clean baseline.
+ * The wildcard selector (*) resets all rofi widgets so that each theme
+ * only needs to declare the properties it cares about, rather than
+ * fighting inherited defaults from rofi's compiled-in fallback theme.
+ *
+ * Why the resets matter:
+ *   - background-color: transparent  -- Prevents rofi's default grey
+ *     backgrounds from bleeding through. Each widget in the theme
+ *     explicitly sets its own background, so the default must be
+ *     invisible.
+ *   - margin/padding/spacing: 0  -- Rofi's built-in defaults add
+ *     non-zero spacing in several places. Zeroing everything here
+ *     means the theme has full control over whitespace.
+ *   - text-color: @cm-text  -- Sets the default text to Catppuccin's
+ *     primary text color, so only accent elements need overrides.
+ *
+ * Font choice:
+ *   JetBrainsMono Nerd Font is used because it provides both clean
+ *   monospace rendering for technical text (paths, commands) and the
+ *   Nerd Font icon glyphs (powerline symbols, file-type icons, etc.)
+ *   that are used throughout the inputbar prompts and mode labels.
+ */
+* {
+    font: "JetBrainsMono Nerd Font 11";
+    background-color: transparent;
+    text-color: @cm-text;
+    margin: 0;
+    padding: 0;
+    spacing: 0;
+}

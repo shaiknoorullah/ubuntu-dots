@@ -1,0 +1,30 @@
+/*
+ * Theme: Obsidian Vault Note Search
+ * Base:  list-menu
+ * Overrides: 1-column 14-line list in a wider box (22% 24% padding)
+ *   to accommodate long note titles and more results.
+ * Binding: $mod+Shift+n
+ * Script:  rofi-obsidian-search.sh
+ */
+@import "shared/list-menu"
+
+listview {
+    columns: 1;
+    lines: 14;
+}
+
+element-icon {
+    enabled: false;
+}
+
+textbox-prompt-colon {
+    str: " ";
+}
+
+mode-switcher {
+    enabled: false;
+}
+
+mainbox {
+    padding: 22% 24%;
+}

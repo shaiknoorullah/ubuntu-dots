@@ -1,0 +1,18 @@
+/*
+ * Theme: Screenshot Mode Selector
+ * Base:  option-menu
+ * Overrides: 3 horizontal icon columns with large 42px Nerd Font
+ *   glyphs for choosing a capture mode (fullscreen, region, window).
+ * Binding: Print
+ * Script:  rofi-screenshot.sh
+ */
+@import "shared/option-menu"
+
+listview {
+    columns: 3;
+    lines: 1;
+}
+
+element-text {
+    font: "JetBrainsMono Nerd Font 42";
+}

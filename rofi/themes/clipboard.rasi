@@ -1,0 +1,22 @@
+/*
+ * Theme: Clipboard History (via greenclip)
+ * Base:  list-menu
+ * Overrides: 1-column 12-line list with icons disabled (text-only
+ *   entries) and a clipboard prompt icon.
+ * Binding: $mod+c
+ * Script:  rofi-clipboard.sh
+ */
+@import "shared/list-menu"
+
+listview {
+    columns: 1;
+    lines: 12;
+}
+
+element-icon {
+    enabled: false;
+}
+
+textbox-prompt-colon {
+    str: "󰅍 ";
+}

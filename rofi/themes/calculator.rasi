@@ -1,0 +1,27 @@
+/*
+ * Theme: Calculator (rofi-calc plugin)
+ * Base:  list-menu
+ * Overrides: 1-column 6-line dynamic list so it grows with results;
+ *   icons and mode-switcher disabled.
+ * Binding: $mod+equal
+ * Invoked: rofi -show calc -theme calculator
+ */
+@import "shared/list-menu"
+
+listview {
+    columns: 1;
+    lines: 6;
+    dynamic: true;
+}
+
+element-icon {
+    enabled: false;
+}
+
+textbox-prompt-colon {
+    str: "󰃬 ";
+}
+
+mode-switcher {
+    enabled: false;
+}

@@ -1,0 +1,26 @@
+/*
+ * Theme: Project Launcher (~/work/ directories)
+ * Base:  list-menu
+ * Overrides: 1-column 10-line list with icons and mode-switcher
+ *   disabled for browsing project directories.
+ * Binding: $mod+p
+ * Script:  rofi-projects.sh
+ */
+@import "shared/list-menu"
+
+listview {
+    columns: 1;
+    lines: 10;
+}
+
+element-icon {
+    enabled: false;
+}
+
+textbox-prompt-colon {
+    str: " ";
+}
+
+mode-switcher {
+    enabled: false;
+}

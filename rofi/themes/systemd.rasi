@@ -1,0 +1,30 @@
+/*
+ * Theme: Systemd Service Manager
+ * Base:  list-menu
+ * Overrides: 1-column 12-line list with pango markup enabled for
+ *   color-coded service status; icons and mode-switcher disabled.
+ * Binding: $mod+Shift+p
+ * Script:  rofi-systemd.sh
+ */
+@import "shared/list-menu"
+
+listview {
+    columns: 1;
+    lines: 12;
+}
+
+element-icon {
+    enabled: false;
+}
+
+element-text {
+    markup: true;
+}
+
+textbox-prompt-colon {
+    str: "󰒓 ";
+}
+
+mode-switcher {
+    enabled: false;
+}

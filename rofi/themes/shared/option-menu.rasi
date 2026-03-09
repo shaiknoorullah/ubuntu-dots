@@ -1,0 +1,162 @@
+/*
+ * Option Menu - Base Theme for Horizontal Icon-Strip Menus
+ * ─────────────────────────────────────────────────────────────
+ * This is the shared base theme for menus that present a small set of
+ * choices as large icon buttons in a horizontal row. Used by:
+ *   - Power menu       (shutdown, reboot, lock, suspend, logout)
+ *   - Screenshot menu  (fullscreen, region, window, timer, clipboard)
+ *   - Media controls   (play, pause, next, prev, stop)
+ *
+ * === How It Differs from list-menu.rasi ===
+ *
+ *   - Tighter vertical padding (42% vs 28%) pushes the content strip
+ *     toward the vertical center, since the strip is much shorter
+ *     than a full scrollable list.
+ *   - Horizontal grid layout: columns=5, lines=1 arranges elements
+ *     side-by-side instead of stacked vertically.
+ *   - The inputbar (search field) is disabled -- these menus have a
+ *     fixed set of options, so searching makes no sense.
+ *   - The mode-switcher (tab bar) is also disabled -- option menus
+ *     do not use multiple modes.
+ *   - A message bar sits below the icon strip. Scripts use rofi's
+ *     -mesg flag to show the label/name of the currently selected
+ *     item (e.g., "Shutdown" when the power icon is highlighted),
+ *     giving the user a text confirmation of what each icon means.
+ *   - Elements use a larger font (42pt) to render Nerd Font icon
+ *     glyphs at display size, and element-icon is disabled since
+ *     the "icon" is actually a text glyph in the element-text.
+ *
+ * === Blur Trick ===
+ *
+ * Uses the same fullscreen semi-transparent overlay as list-menu.rasi
+ * to trigger picom's dual_kawase blur on the desktop. See the header
+ * comment in list-menu.rasi for the full explanation of this technique.
+ *
+ * === Overriding in Child Themes ===
+ *
+ * Child themes typically only need to adjust the column count to match
+ * their number of options. For example, a 4-option menu would set
+ * `listview { columns: 4; }` after importing this file.
+ */
+
+/* Import shared foundations:
+ *   catppuccin-mocha  -> color palette (cm-* variables)
+ *   settings          -> global resets (font, zeroed spacing, transparent bg) */
+@import "catppuccin-mocha"
+@import "settings"
+
+/* ── Fullscreen blurred overlay ──────────────────────────── */
+/* Same technique as list-menu: fullscreen + semi-transparent background
+ * triggers picom blur on the desktop underneath. */
+window {
+    fullscreen:         true;
+    transparency:       "real";
+    background-color:   @cm-base-overlay;
+    cursor:             "default";
+}
+
+/* ── Centered content box (tighter vertical padding) ─────── */
+/* Higher vertical padding (42%) than list-menu (28%) because the icon
+ * strip is short -- this keeps it vertically centered on screen.
+ * Only two children: the icon grid (listview) and the label bar (message).
+ * No inputbar or mode-switcher. */
+mainbox {
+    padding:            42% 28%;
+    background-color:   transparent;
+    children:           [ "listview", "message" ];
+}
+
+/* ── Horizontal icon grid ────────────────────────────────── */
+/* Renders all options in a single row (lines=1) of N columns.
+ * Child themes adjust "columns" to match their option count.
+ * Opaque cm-mantle background keeps icons readable over the blur.
+ * Top-only radius pairs with the message bar's bottom radius to
+ * form the complete rounded rectangle. */
+listview {
+    columns:            5;
+    lines:              1;
+    cycle:              true;
+    dynamic:            false;
+    scrollbar:          false;
+    layout:             vertical;
+    fixed-height:       true;
+    spacing:            16px;
+    padding:            24px;
+    background-color:   @cm-mantle;
+    border-radius:      12px 12px 0 0;
+    cursor:             "default";
+}
+
+/* ── Elements (large icon buttons) ───────────────────────── */
+/* Each option is a card-like button. "orientation: vertical" stacks
+ * the (disabled) icon and the text glyph vertically, though in practice
+ * only the text glyph is shown since element-icon is disabled. */
+element {
+    padding:            24px 12px;
+    border-radius:      12px;
+    background-color:   @cm-surface0;
+    cursor:             pointer;
+    orientation:        vertical;
+}
+
+element normal.normal {
+    background-color:   @cm-surface0;
+    text-color:         @cm-text;
+}
+
+/* Selected option: inverts to the accent color (mauve) with dark text
+ * so the highlighted choice is immediately obvious. */
+element selected.normal {
+    background-color:   @cm-mauve;
+    text-color:         @cm-crust;
+}
+
+/* Standard desktop icons are disabled -- the scripts pass Nerd Font
+ * glyphs as the element text instead, which gives more control over
+ * icon appearance and avoids dependency on icon theme coverage. */
+element-icon {
+    enabled:            false;
+}
+
+/* Large (42pt) Nerd Font glyph rendering. The oversized font turns
+ * each text character into a display-size icon. Centered both ways
+ * so the glyph sits in the middle of its card. */
+element-text {
+    font:               "JetBrainsMono Nerd Font 42";
+    background-color:   transparent;
+    text-color:         inherit;
+    cursor:             inherit;
+    vertical-align:     0.5;
+    horizontal-align:   0.5;
+}
+
+/* ── Message bar (shows label of selected item) ──────────── */
+/* Scripts use rofi's -mesg flag or the message mechanism to display
+ * the human-readable name of the selected icon (e.g., "Shutdown").
+ * This sits below the icon strip with bottom-only radius to complete
+ * the rounded rectangle shape. */
+message {
+    padding:            14px;
+    background-color:   @cm-mantle;
+    border-radius:      0 0 12px 12px;
+}
+
+textbox {
+    background-color:   transparent;
+    text-color:         @cm-subtext1;
+    vertical-align:     0.5;
+    horizontal-align:   0.5;
+}
+
+/* ── Hidden elements ─────────────────────────────────────── */
+/* The inputbar (search field) is disabled because option menus have
+ * a fixed set of choices -- there is nothing to search/filter. */
+inputbar {
+    enabled:            false;
+}
+
+/* The mode-switcher (tab bar) is disabled because option menus
+ * operate in a single mode with no need to switch contexts. */
+mode-switcher {
+    enabled:            false;
+}

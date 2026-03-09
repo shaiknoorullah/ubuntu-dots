@@ -1,0 +1,18 @@
+/*
+ * Theme: Power Menu (shutdown, reboot, lock, suspend, logout)
+ * Base:  option-menu
+ * Overrides: 5 horizontal icon columns with large 42px Nerd Font
+ *   glyphs for a quick visual selector.
+ * Binding: $mod+Shift+e
+ * Script:  rofi-power.sh
+ */
+@import "shared/option-menu"
+
+listview {
+    columns: 5;
+    lines: 1;
+}
+
+element-text {
+    font: "JetBrainsMono Nerd Font 42";
+}

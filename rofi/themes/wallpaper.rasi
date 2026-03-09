@@ -1,0 +1,26 @@
+/*
+ * Theme: Wallpaper Picker
+ * Base:  list-menu
+ * Overrides: 1-column 10-line list with icons and mode-switcher
+ *   disabled; uses a wallpaper prompt icon.
+ * Binding: $mod+Shift+w
+ * Script:  rofi-wallpaper.sh
+ */
+@import "shared/list-menu"
+
+listview {
+    columns: 1;
+    lines: 10;
+}
+
+element-icon {
+    enabled: false;
+}
+
+textbox-prompt-colon {
+    str: "󰸉 ";
+}
+
+mode-switcher {
+    enabled: false;
+}
