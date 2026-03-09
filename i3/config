@@ -1,0 +1,257 @@
+# ─────────────────────────────────────────────────────────────
+# i3 config - Catppuccin Mocha (Hyprland-like setup)
+# ─────────────────────────────────────────────────────────────
+
+set $mod Mod4
+
+# Font
+font pango:JetBrainsMono Nerd Font 9
+
+# ─────────────────────────────────────────────────────────────
+# Autostart
+# ─────────────────────────────────────────────────────────────
+
+# Monitor arrangement (HDMI-2 left/primary, HDMI-1 right)
+exec --no-startup-id xrandr --output HDMI-2 --mode 1920x1080 --pos 0x0 --primary --output HDMI-1 --mode 1920x1080 --pos 1920x0 --right-of HDMI-2
+
+exec --no-startup-id dex --autostart --environment i3
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id nm-applet
+
+# Polybar (replaces i3bar)
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+
+# Compositor (transparency, shadows, animations)
+exec_always --no-startup-id picom -b
+
+# Wallpaper (managed by rofi-wallpaper via feh)
+exec_always --no-startup-id ~/.fehbg
+
+# Notification daemon
+exec --no-startup-id dunst
+
+# Clipboard daemon
+exec --no-startup-id greenclip daemon
+
+# ─────────────────────────────────────────────────────────────
+# Appearance - Catppuccin Mocha
+# ─────────────────────────────────────────────────────────────
+
+# class                 border  bground text    indicator child_border
+client.focused          #CBA6F7 #1E1E2E #CDD6F4 #B4BEFE   #CBA6F7
+client.focused_inactive #45475A #1E1E2E #CDD6F4 #45475A   #45475A
+client.unfocused        #313244 #1E1E2E #A6ADC8 #313244   #313244
+client.urgent           #F38BA8 #1E1E2E #CDD6F4 #F38BA8   #F38BA8
+client.placeholder      #1E1E2E #1E1E2E #CDD6F4 #1E1E2E   #1E1E2E
+client.background       #1E1E2E
+
+# Gaps (like Hyprland)
+gaps inner 6
+gaps outer 3
+
+# Thin borders, no title bars
+default_border pixel 2
+default_floating_border pixel 2
+
+# Centered tab titles with inner padding
+title_align center
+for_window [class=".*"] title_format "  %title  "
+
+# Hide edge borders when only one window
+hide_edge_borders smart
+
+# ─────────────────────────────────────────────────────────────
+# Key Bindings
+# ─────────────────────────────────────────────────────────────
+
+# Terminal (kitty)
+bindsym $mod+Return exec kitty
+
+# Kill focused window
+bindsym $mod+Shift+q kill
+
+# ── Rofi Core ──────────────────────────────────────────────
+bindsym $mod+d exec --no-startup-id rofi -show drun -theme ~/.config/rofi/themes/launcher.rasi
+bindsym $mod+Shift+d exec --no-startup-id rofi -show run -theme ~/.config/rofi/themes/launcher.rasi
+bindsym $mod+Tab exec --no-startup-id rofi -show window -theme ~/.config/rofi/themes/launcher.rasi
+bindsym $mod+Shift+s exec --no-startup-id rofi -show ssh -theme ~/.config/rofi/themes/launcher.rasi
+bindsym $mod+Shift+f exec --no-startup-id rofi -show filebrowser -theme ~/.config/rofi/themes/launcher.rasi
+bindsym $mod+F1 exec --no-startup-id rofi -show keys -theme ~/.config/rofi/themes/keybindings.rasi
+
+# ── Rofi System ────────────────────────────────────────────
+bindsym $mod+c exec --no-startup-id ~/.config/rofi/scripts/rofi-clipboard.sh
+bindsym $mod+Shift+b exec --no-startup-id ~/.config/rofi/scripts/rofi-bluetooth.sh
+bindsym $mod+Shift+m exec --no-startup-id ~/.config/rofi/scripts/rofi-display.sh
+bindsym $mod+Shift+w exec --no-startup-id ~/.config/rofi/scripts/rofi-wallpaper.sh
+bindsym Print exec --no-startup-id ~/.config/rofi/scripts/rofi-screenshot.sh
+bindsym $mod+Shift+p exec --no-startup-id ~/.config/rofi/scripts/rofi-systemd.sh
+
+# ── Rofi Productivity ─────────────────────────────────────
+bindsym $mod+equal exec --no-startup-id rofi -show calc -modi calc -no-show-match -no-sort -theme ~/.config/rofi/themes/calculator.rasi -calc-command "echo -n '{result}' | xclip -selection clipboard"
+bindsym $mod+period exec --no-startup-id rofimoji --action clipboard --skin-tone neutral --selector-args="-theme $HOME/.config/rofi/themes/emoji.rasi"
+bindsym $mod+slash exec --no-startup-id ~/.config/rofi/scripts/rofi-websearch.sh
+
+# ── Rofi Developer ────────────────────────────────────────
+bindsym $mod+p exec --no-startup-id ~/.config/rofi/scripts/rofi-projects.sh
+bindsym $mod+g exec --no-startup-id ~/.config/rofi/scripts/rofi-git-profile.sh
+bindsym $mod+t exec --no-startup-id ~/.config/rofi/scripts/rofi-tmux.sh
+
+# ── Rofi Browser ──────────────────────────────────────────
+bindsym $mod+Shift+o exec --no-startup-id ~/.config/rofi/scripts/rofi-bookmarks.sh
+
+# ── Rofi Notes ────────────────────────────────────────────
+bindsym $mod+n exec --no-startup-id ~/.config/rofi/scripts/rofi-obsidian.sh
+bindsym $mod+Shift+n exec --no-startup-id ~/.config/rofi/scripts/rofi-obsidian-search.sh
+
+# ── Rofi Other ────────────────────────────────────────────
+bindsym $mod+F2 exec --no-startup-id ~/.config/rofi/scripts/rofi-keybindings.sh
+bindsym $mod+m exec --no-startup-id ~/.config/rofi/scripts/rofi-media.sh
+
+# ── Volume (PulseAudio) ───────────────────────────────────
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
+
+# ── Media keys (hardware) ─────────────────────────────────
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+bindsym XF86AudioNext exec --no-startup-id playerctl next
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+
+# Lock screen
+bindsym $mod+Escape exec --no-startup-id i3lock -c 1E1E2E
+
+# ─────────────────────────────────────────────────────────────
+# Navigation (vim-style, matching Hyprland)
+# ─────────────────────────────────────────────────────────────
+
+floating_modifier $mod
+tiling_drag modifier titlebar
+
+# Focus (h/j/k/l like Hyprland)
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# Focus with arrow keys
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Move windows (Shift + h/j/k/l)
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# Move with arrow keys
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# ─────────────────────────────────────────────────────────────
+# Layout
+# ─────────────────────────────────────────────────────────────
+
+# Split orientation
+bindsym $mod+b split h
+bindsym $mod+v split v
+
+# Fullscreen
+bindsym $mod+f fullscreen toggle
+
+# Layout modes
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# Floating
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+
+# Parent/child focus
+bindsym $mod+a focus parent
+
+# ─────────────────────────────────────────────────────────────
+# Workspaces
+# ─────────────────────────────────────────────────────────────
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# Switch to workspace
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+# Move container to workspace
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+# ─────────────────────────────────────────────────────────────
+# Session Management
+# ─────────────────────────────────────────────────────────────
+
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+bindsym $mod+Shift+e exec --no-startup-id ~/.config/rofi/scripts/rofi-power.sh
+
+# ─────────────────────────────────────────────────────────────
+# Resize Mode
+# ─────────────────────────────────────────────────────────────
+
+mode "resize" {
+        bindsym h resize shrink width 5 px or 5 ppt
+        bindsym j resize grow height 5 px or 5 ppt
+        bindsym k resize shrink height 5 px or 5 ppt
+        bindsym l resize grow width 5 px or 5 ppt
+
+        bindsym Left resize shrink width 5 px or 5 ppt
+        bindsym Down resize grow height 5 px or 5 ppt
+        bindsym Up resize shrink height 5 px or 5 ppt
+        bindsym Right resize grow width 5 px or 5 ppt
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+# ─────────────────────────────────────────────────────────────
+# Window Rules
+# ─────────────────────────────────────────────────────────────
+
+# Float dialog windows
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
+for_window [class="Pavucontrol"] floating enable
+for_window [class="Nm-connection-editor"] floating enable
