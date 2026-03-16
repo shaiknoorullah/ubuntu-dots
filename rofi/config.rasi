@@ -73,6 +73,25 @@ configuration {
     display-window:             "  Windows";
     display-keys:               "  Keys";
 
+    /* ── Vim-style Navigation (Ctrl+hjkl) ─────────────────
+     * Move between entries and columns using Ctrl + vim keys.
+     * Ctrl+j/k: down/up through entries
+     * Ctrl+h/l: left/right across columns or tabs
+     *
+     * Default bindings that conflict are reassigned:
+     *   kb-accept-entry:    Ctrl+j -> removed (Return/KP_Enter remain)
+     *   kb-remove-char-back: Ctrl+h -> removed (BackSpace remains)
+     *   kb-remove-to-eol:   Ctrl+k -> removed
+     *   kb-mode-complete:   Ctrl+l -> removed */
+    kb-accept-entry:            "Return,KP_Enter";
+    kb-remove-char-back:        "BackSpace,Shift+BackSpace";
+    kb-remove-to-eol:           "";
+    kb-mode-complete:           "";
+    kb-row-up:                  "Up,Control+k";
+    kb-row-down:                "Down,Control+j";
+    kb-row-left:                "Control+h";
+    kb-row-right:               "Control+l";
+
     /* ── Filebrowser Mode Settings ───────────────────────────
      * Directories appear before files, sorted alphabetically by name. */
     filebrowser {

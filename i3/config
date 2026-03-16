@@ -11,8 +11,8 @@ font pango:JetBrainsMono Nerd Font 9
 # Autostart
 # ─────────────────────────────────────────────────────────────
 
-# Monitor arrangement (HDMI-2 left/primary, HDMI-1 right)
-exec --no-startup-id xrandr --output HDMI-2 --mode 1920x1080 --pos 0x0 --primary --output HDMI-1 --mode 1920x1080 --pos 1920x0 --right-of HDMI-2
+# Monitor arrangement (single monitor: HDMI-2)
+exec --no-startup-id xrandr --output HDMI-2 --mode 1920x1080 --primary
 
 exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
@@ -50,8 +50,8 @@ gaps inner 6
 gaps outer 3
 
 # Thin borders, no title bars
-default_border pixel 2
-default_floating_border pixel 2
+default_border pixel 0
+default_floating_border pixel 0
 
 # Centered tab titles with inner padding
 title_align center
@@ -71,12 +71,12 @@ bindsym $mod+Return exec kitty
 bindsym $mod+Shift+q kill
 
 # ── Rofi Core ──────────────────────────────────────────────
-bindsym $mod+d exec --no-startup-id rofi -show drun -theme ~/.config/rofi/themes/launcher.rasi
-bindsym $mod+Shift+d exec --no-startup-id rofi -show run -theme ~/.config/rofi/themes/launcher.rasi
-bindsym $mod+Tab exec --no-startup-id rofi -show window -theme ~/.config/rofi/themes/launcher.rasi
-bindsym $mod+Shift+s exec --no-startup-id rofi -show ssh -theme ~/.config/rofi/themes/launcher.rasi
-bindsym $mod+Shift+f exec --no-startup-id rofi -show filebrowser -theme ~/.config/rofi/themes/launcher.rasi
-bindsym $mod+F1 exec --no-startup-id rofi -show keys -theme ~/.config/rofi/themes/keybindings.rasi
+bindsym $mod+space exec --no-startup-id ~/.config/rofi/scripts/rofilaunch.sh d
+bindsym $mod+Tab exec --no-startup-id ~/.config/rofi/scripts/rofilaunch.sh w
+bindsym $mod+Shift+s exec --no-startup-id ~/.config/rofi/scripts/rofilaunch.sh --run
+bindsym $mod+Shift+f exec --no-startup-id ~/.config/rofi/scripts/rofilaunch.sh f
+bindsym $mod+Shift+d exec --no-startup-id ~/.config/rofi/scripts/rofi-style-selector.sh
+bindsym $mod+F1 exec --no-startup-id rofi -show keys -theme ~/.config/rofi/themes/clipboard.rasi
 
 # ── Rofi System ────────────────────────────────────────────
 bindsym $mod+c exec --no-startup-id ~/.config/rofi/scripts/rofi-clipboard.sh
@@ -84,12 +84,12 @@ bindsym $mod+Shift+b exec --no-startup-id ~/.config/rofi/scripts/rofi-bluetooth.
 bindsym $mod+Shift+m exec --no-startup-id ~/.config/rofi/scripts/rofi-display.sh
 bindsym $mod+Shift+w exec --no-startup-id ~/.config/rofi/scripts/rofi-wallpaper.sh
 bindsym Print exec --no-startup-id ~/.config/rofi/scripts/rofi-screenshot.sh
-bindsym $mod+Shift+p exec --no-startup-id ~/.config/rofi/scripts/rofi-systemd.sh
+bindsym $mod+Ctrl+s exec --no-startup-id ~/.config/rofi/scripts/rofi-systemd.sh
 
 # ── Rofi Productivity ─────────────────────────────────────
-bindsym $mod+equal exec --no-startup-id rofi -show calc -modi calc -no-show-match -no-sort -theme ~/.config/rofi/themes/calculator.rasi -calc-command "echo -n '{result}' | xclip -selection clipboard"
-bindsym $mod+period exec --no-startup-id rofimoji --action clipboard --skin-tone neutral --selector-args="-theme $HOME/.config/rofi/themes/emoji.rasi"
-bindsym $mod+slash exec --no-startup-id ~/.config/rofi/scripts/rofi-websearch.sh
+bindsym $mod+equal exec --no-startup-id rofi -show calc -modi calc -no-show-match -no-sort -theme ~/.config/rofi/themes/clipboard.rasi -calc-command "echo -n '{result}' | xclip -selection clipboard"
+bindsym $mod+period exec --no-startup-id rofimoji --action clipboard --skin-tone neutral --selector-args="-theme $HOME/.config/rofi/themes/clipboard.rasi"
+bindsym $mod+slash exec --no-startup-id ~/.config/rofi/scripts/rofi-websearch-v2.sh
 
 # ── Rofi Developer ────────────────────────────────────────
 bindsym $mod+p exec --no-startup-id ~/.config/rofi/scripts/rofi-projects.sh
@@ -98,6 +98,9 @@ bindsym $mod+t exec --no-startup-id ~/.config/rofi/scripts/rofi-tmux.sh
 
 # ── Rofi Browser ──────────────────────────────────────────
 bindsym $mod+Shift+o exec --no-startup-id ~/.config/rofi/scripts/rofi-bookmarks.sh
+for_window [class="zen-tab-switcher"] floating enable, move position center
+bindsym $mod+grave exec --no-startup-id ~/.config/rofi/scripts/zen-tab-popup.sh
+bindsym $mod+Shift+t exec --no-startup-id ~/.config/rofi/scripts/zen-workspaces.sh
 
 # ── Rofi Notes ────────────────────────────────────────────
 bindsym $mod+n exec --no-startup-id ~/.config/rofi/scripts/rofi-obsidian.sh
@@ -170,7 +173,7 @@ bindsym $mod+e layout toggle split
 
 # Floating
 bindsym $mod+Shift+space floating toggle
-bindsym $mod+space focus mode_toggle
+# bindsym $mod+space focus mode_toggle  # replaced by app launcher
 
 # Parent/child focus
 bindsym $mod+a focus parent
@@ -221,6 +224,7 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec --no-startup-id ~/.config/rofi/scripts/rofi-power.sh
+bindsym $mod+Shift+p exec --no-startup-id ~/.config/polybar/launch.sh
 
 # ─────────────────────────────────────────────────────────────
 # Resize Mode
