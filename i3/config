@@ -11,8 +11,8 @@ font pango:JetBrainsMono Nerd Font 9
 # Autostart
 # ─────────────────────────────────────────────────────────────
 
-# Monitor arrangement (single monitor: HDMI-2)
-exec --no-startup-id xrandr --output HDMI-2 --mode 1920x1080 --primary
+# Monitor arrangement (auto-detect first connected output)
+exec --no-startup-id xrandr --output $(xrandr | grep ' connected' | head -1 | awk '{print $1}') --auto --primary
 
 exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
@@ -21,8 +21,8 @@ exec --no-startup-id nm-applet
 # Polybar (replaces i3bar)
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
-# Compositor (transparency, shadows, animations)
-exec_always --no-startup-id picom -b
+# Compositor (transparency, blur, rounded corners)
+exec_always --no-startup-id ~/.config/picom/launch.sh
 
 # Wallpaper (managed by rofi-wallpaper via feh)
 exec_always --no-startup-id ~/.fehbg
