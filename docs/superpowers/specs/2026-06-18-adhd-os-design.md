@@ -475,7 +475,7 @@ model → returns. Runs locally first; promotable to the VPS.
 | Event store | **PostgreSQL** (append-only) | L5 time-series per blueprint |
 | Vault/journal sync | **Syncthing** (or git) | plain-file sync; no pfapi needed |
 | Password manager | **Vaultwarden** (self-hosted Bitwarden) | also backs chezmoi secrets |
-| Agent runtime | LiteLLM + **{current orchestration runtime — TBD}** | `powerhouse-system` was ditched; replacement name pending operator (open Q10) |
+| Agent runtime | **Shahin** (LiteLLM 6-tier, Pi-engine) + **CORE** | replaces the ditched powerhouse-system; see §20–21. Deferred post-2026-08-02 |
 | Integration pollers | systemd timers (Linear/Slack/email/cal) | §16 |
 | Activity store | **ActivityWatch** server | aggregates per-host watchers |
 | Health ingest | Amazfit/Zepp → Gadgetbridge/Zepp export → Postgres | §14.5 life data |
@@ -511,6 +511,108 @@ The system is now explicitly multiple subsystems; each ships independently.
 8. **Health data path:** does the Amazfit sync via Gadgetbridge (Android) or the
    Zepp web export? (Determines the ingest adapter.)
 9. **AI agent home:** local-first now, VPS later (recommended) — or VPS from day 1?
-10. **Orchestration runtime:** `powerhouse-system` was ditched — what replaced it?
-    (Candidates seen on the machine: `opsbench`, `agenthive`, `nanoclaw`, the
-    `maestro`/`pi-fleet` system.) The data plane (§17) plugs into this.
+10. ~~Orchestration runtime~~ — **RESOLVED 2026-06-18: Shahin + CORE** (+ kata),
+    Pi-engine. Decided in `journal/career/specs/2026-06-04-fleet-consolidation-
+    design.md`; **deferred to post-2026-08-02**. Detail in §20. The "master AI
+    agent" = **CORE** (§21). Desktop integrates via stable contracts (§22), not
+    the runtime directly.
+
+---
+
+# Addendum v3 (2026-06-18) — runtime resolved, contracts, sovereignty, island
+
+> From the deep powerhouse read. Source of truth for the runtime is
+> `journal/career/specs/2026-06-04-fleet-consolidation-design.md` (the vault's
+> own `CLAUDE.md`/`01-tool-selection.md` are **stale** — they still say "Hermes";
+> do not trust them for the runtime).
+
+## 20. The orchestration runtime (resolves §17 "TBD")
+
+`powerhouse-system` ("Hermes") is **ditched**. Current decided architecture:
+- **Shahin** — code-orchestration runtime; a clean-room fork of `~/work/fleet-
+  home/` (the ProficientNow platform). Pi-first multi-agent: **LiteLLM 6-tier
+  routing**, YAML-DAG blueprints, Cedar policy gates, tmux+git-worktree, a Bun
+  webhook, a Temporal worker. Repo: `shaiknoorullah/shahin` (private).
+- **CORE** (`github.com/RedPlanetHQ/core`, AGPL-3.0) — personal-AI/coaching OS:
+  **Neo4j temporal memory, 50+ MCP connectors, 4 surfaces (voice / scratchpad /
+  messaging / chat), a Claude Code gateway.** All coaching delegated here.
+- **kata** (`kenn-io/kata`) — agent ticket ledger (SQLite + HLC + SSE).
+- **Bridge:** CORE dispatches code tasks to Shahin's HTTP API (HTTP-only seam).
+- Engine = **Pi** (`@mariozechner/pi-coding-agent`) — this is the `pi-fleet` /
+  `maestro-state` system already visible in this session's hooks.
+
+**Deferred:** full build is post-`2026-08-02` (job landing); only a small
+"Phase 0.5" backbone ships during the hunt. **Design consequence:** the desktop
+must NOT depend on Shahin/CORE being up — it emits into the **stable contracts
+(§22)** so data flows the moment they come online. Capture-now, integrate-later,
+now concrete.
+
+## 21. Master AI agent = CORE (revises §17.1)
+
+The left-bar "master agent" is **not something we build** — it is a thin client
+to **CORE** (full context via Neo4j memory + 50+ MCP; model routing via Shahin's
+LiteLLM 6-tier: Gemini / Claude / local-Ollama / etc.). Until CORE is deployed,
+the left-bar input routes to **LiteLLM directly** (already installed) with vault +
+task context; NotebookLM stays a manual deep-research surface. **Build now:** the
+left-bar agent UI + a pluggable backend interface (`LiteLLM` now → `CORE` later).
+
+## 22. Integration contracts (stable seams — B/C/D emit here)
+
+Already defined in the vault; the desktop just matches field names + a `source`
+provenance tag. Three sinks:
+- **(A) Obsidian REST → daily-note frontmatter** (`:27124`): `salah{}`, `adhkar`,
+  `quran-minutes`, `mood`, `energy`, `sleep*`, `selfcare{}`, `meals{}`,
+  `triggers[]`, `exercise`, `practices-completed[]`. New: `office{in,out}`,
+  `time-categories`, `time-per-project`.
+- **(B) Postgres `tracking.*`** (append-only, every row `source='<tracker>'`):
+  `screen_time_logs`, `study_sessions`, `mood_energy_logs`, `trigger_logs`,
+  `daily_logs`. Schema: `blueprint/archive/design/meta/04-data-model-deployment.md`.
+- **(C) Event store `event_store`/`deliberation_events`** (typed L5 events:
+  `MetricRecorded`, `MoodEnergyLogged`, `TriggerLogged`, `PracticeLogged`).
+
+**Passive signal sources to run locally now:** **ActivityWatch** (`localhost:5600`
+— window/afk/web), **Wakapi** (coding time), timewarrior/taskwarrior, dunst-DND,
+hostctl (focus-profile). The vault's **Guardian** agent consumes ActivityWatch
+every 5 min for trigger detection — so installing AW now directly serves the
+operator's stated goals. (CORE's MCP connectors own Linear/Slack/email/cal later;
+§16's thin taskwarrior pollers remain the near-term path.)
+
+## 23. §20-bis Personal data sovereignty (NEW — backs the defensive-privacy ask)
+
+Grounded in vault **Axiom 4** (`blueprint/design/01-philosophy-and-axioms.md`):
+*"the subject owns their data absolutely… local and self-hosted whenever
+feasible; data sovereignty is a design constraint, not a feature."* So the
+defensive layer isn't a bolt-on — it's the system's first principle.
+- **Sensitive processing on-device (Ollama)** — Guardian's trigger/screen-time
+  data never leaves the machine (the vault already mandates this).
+- **Terminal history** → **atuin**, E2E-encrypted, synced to the Contabo box →
+  ciphertext to any DLP/Code42.
+- **Browser history** → personal Zen profile ephemeral / daily `systemd` clear;
+  **work** profile normal (monitoring sees work, not personal).
+- **Passwords** → **Vaultwarden** (self-hosted).
+- **Secrets/configs/dirs** → chezmoi + **age**; a **gocryptfs/fscrypt** encrypted
+  personal volume.
+- **Transport** → sync over **Tailscale** (the vault design's own choice, with
+  Syncthing + Obsidian LiveSync) — encrypted on the wire. *(Revises my earlier
+  WireGuard rec: align to the existing Tailscale standard; Headscale is the
+  zero-third-party option if wanted.)*
+- Rides the **Context** boundary. Caveat: keep within employer acceptable-use
+  policy — defensive personal-data privacy only.
+
+## 24. VPS = Contabo Mumbai (revises §17.2)
+
+Actual deployed box: **`contabo-mum-1` · 217.217.251.84 · Mumbai**, already
+running n8n / Postgres / Ghost / Astro / Uptime-Kuma / restic; RAM tight
+(~5.5/8 GB worst-case; Hetzner CPX31 noted as fallback). Managed via **`cntb`**
+(installed) + the `contabo-cntb` skill. Data plane adds CORE (Neo4j) + Shahin
+HTTP + Vaultwarden + Obsidian LiveSync (CouchDB) + Wakapi + AW-sync. Backups:
+**restic → Google Drive via rclone**, daily (operator pref; design had Backblaze B2).
+
+## 25. Dynamic Island (revises §15 top bar)
+
+Top-center = an **iOS-style Dynamic Island**: collapsed pill (album art + live EQ
++ track) that springs open (overshoot ease) into a full media player AND serves
+as a **live-activity slot** cycling the highest-priority live signal — deep-block
+timer · ArgoCD deploy finishing · incident firing · a Shahin/Claude agent
+awaiting input. eww-portable (Brain-Shell notch→morph; revealer + CSS spring).
+Mockup: `docs/superpowers/mockups/` (open `adhd-os.html`, press `m`).
