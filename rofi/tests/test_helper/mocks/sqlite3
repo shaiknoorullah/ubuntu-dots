@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-echo "sqlite3 $*" >> "$MOCK_LOG"
-echo "${SQLITE3_OUTPUT:-}"
