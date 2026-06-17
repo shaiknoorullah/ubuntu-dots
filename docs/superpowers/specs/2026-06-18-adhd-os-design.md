@@ -117,7 +117,8 @@ palette. Font stays JetBrainsMono Nerd Font.
 ## 6. Vault integration (capture-now, integrate-later)
 
 - **Now:** desktop writes captures and daily-note entries through
-  `local-rest-api` (`:27124`, API key in `~/.secrets`). Target a single inbox
+  `local-rest-api` (`:27124`, API key as a chezmoi-managed encrypted secret).
+  Target a single inbox
   surface — `journal/daily/DD-MM-YYYY.md` under an `## Inbox` heading (created
   from a Templater daily template if missing).
 - **Seams for later:** captures carry a `context` tag and ISO timestamp so the
@@ -142,13 +143,15 @@ Each phase gets its own implementation plan and review gate.
 
 **Goal:** a clean, secure, single-theme base that every later phase inherits.
 
-### 0.1 Secrets hygiene
+### 0.1 Secrets hygiene (via chezmoi)
 - Rotate the OpenAI key currently plaintext in `~/.zshrc` (`CZ_OPENAI_API_KEY`)
   and the LiteLLM key. (Operator action — Claude cannot rotate provider keys.)
-- Create `~/.secrets` (chmod 600, gitignored), move both keys there, `source` it
-  from `~/.zshrc`. Add the Obsidian REST API key here too (for Phase 1).
-- Acceptance: `git grep` over dotfiles finds no `sk-` / API tokens; new shell
-  still has the env vars.
+- Adopt **chezmoi** as the dotfiles manager (decision 2026-06-18). Store both
+  keys + the Obsidian REST API key as chezmoi **encrypted** secrets (age or gpg),
+  injected into a sourced env file via a `.tmpl` — never plaintext in a tracked
+  file. `~/.zshrc` sources the rendered env file.
+- Acceptance: `git grep` over the chezmoi source finds no `sk-` / API tokens
+  (only encrypted blobs or template refs); new shell still has the env vars.
 
 ### 0.2 Fix repo drift (the "fix & finish" scope item)
 - **Missing scripts** referenced by `i3/config` but absent: `rofilaunch.sh`,
@@ -167,21 +170,24 @@ Each phase gets its own implementation plan and review gate.
   binding references exists in-repo; picom launches from the deployed path.
 
 ### 0.3 Dracula token system
-- Create `themes/dracula.yaml` (or `.sh`) as the **single palette source**:
+- Define the **single palette source** in chezmoi's `.chezmoidata.yaml`:
   base `#282A36`, bg-dark `#141313`, fg `#F8F8F2`, comment `#6272A4`,
   purple `#BD93F9`, pink `#FF79C6`, cyan `#8BE9FD`, green `#50FA7B`,
   orange `#FFB86C`, red `#FF5555`, yellow `#F1FA8C`, plus the four context accents.
-- Generate/derive per-app theme files from it: i3 colors, rofi
-  `themes/shared/dracula.rasi` (replacing catppuccin-mocha), polybar `[colors]`,
-  kitty `current-theme.conf`, picom tint. A small `scripts/gen-theme.sh` renders
-  all targets from the token file so future palette edits are one-touch.
-- Acceptance: changing one hex in the token file + running `gen-theme.sh` updates
-  every component; no component contains a hand-typed Dracula hex.
+- Each themed config becomes a chezmoi **template** (`.tmpl`) pulling colors from
+  that data: i3 colors, rofi `themes/shared/dracula.rasi` (replacing
+  catppuccin-mocha), polybar `[colors]`, kitty `current-theme.conf`, picom tint,
+  eww `.scss`. No custom `gen-theme.sh` needed — `chezmoi apply` renders all.
+- Acceptance: changing one hex in `.chezmoidata.yaml` + `chezmoi apply` updates
+  every component; no rendered config contains a hand-typed Dracula hex.
 
-### 0.4 Deploy mechanism + README
-- Add `install.sh` (GNU Stow or explicit symlinks) mapping repo dirs →
-  `~/.config/*`, plus a top-level `README.md` (install, layout, theme, phases).
-- Acceptance: a fresh `install.sh` run symlinks all configs correctly; documented.
+### 0.4 Deploy mechanism + README (chezmoi)
+- Migrate the repo into a chezmoi source layout (`dot_config/...`, `.tmpl` for
+  themed/secret files, `.chezmoidata.yaml` for tokens). Provide a bootstrap
+  (`chezmoi init` + `apply`) and a top-level `README.md` (install, layout, theme,
+  phases). Note: this restructures `ubuntu-dots` from raw dirs to chezmoi source.
+- Acceptance: `chezmoi apply` on a clean machine renders/links every config
+  correctly, secrets decrypt, theme renders; documented in README.
 
 ## 9. Phase 1 spec — ADHD core
 
@@ -236,5 +242,7 @@ and the day observable.
 4. **Phase 0.2 scope:** if the five "missing" scripts genuinely don't exist on
    disk, are you OK with me repointing those bindings to existing equivalents
    rather than writing new menu scripts now (deferring new menus to later)?
-5. **Stow vs symlink** for `install.sh` — any preference?
+5. ~~Stow vs symlink~~ — **RESOLVED 2026-06-18: chezmoi** (templating for theme
+   tokens + encrypted secrets). Phase 0.4 restructures the repo to chezmoi source
+   layout; confirm you're OK with that restructure.
 ```
