@@ -616,3 +616,39 @@ as a **live-activity slot** cycling the highest-priority live signal — deep-bl
 timer · ArgoCD deploy finishing · incident firing · a Shahin/Claude agent
 awaiting input. eww-portable (Brain-Shell notch→morph; revealer + CSS spring).
 Mockup: `docs/superpowers/mockups/` (open `adhd-os.html`, press `m`).
+
+## 26. Floating popup apps — master-agent console + music player (NEW)
+
+Two **summoned, keyboard-first floating windows** that share ONE pattern (the same
+"summoned overlay" language as the command palette §12 and the Dynamic Island
+§25): Dracula, fast, dismiss-instantly, fully keyboard-driven, **persistent**
+(toggled, state preserved). Sub-project A (UI); land in **Phase 2** after 0/1.
+Mockups deferred (parked with the player polish).
+
+**26.0 Shared popup framework.** An eww floating `defwindow` (stacking overlay,
+`:focusable true`), summoned by a keybind, themed from the Dracula tokens, with: a
+fuzzy search/command line, a content/result area, vim-style keyboard nav
+(`j/k`, `/`, `Enter`, `Esc`, `Tab`), instant show/hide (i3 floating +
+scratchpad-style toggle). Both apps are instances of this one framework.
+
+**26.1 Master-agent console** (`$mod+<key>`). The full-window sibling of the
+left-bar "ask anything" strip (§21) — same backend, richer surface:
+- Multi-line **prompt input** + streaming response area.
+- Fuzzy **search old conversations**, **tag** threads, **switch model** inline
+  (Gemini / Claude / local-Ollama / NotebookLM).
+- Backend: **CORE** (conversation store = Neo4j memory + 50+ MCP) when deployed;
+  **LiteLLM** routing now. Threads + tags persisted (CORE → local SQLite seam).
+- Depends on sub-project **D** (CORE/LiteLLM).
+
+**26.2 Music player** (`$mod+<key>`). Keyboard-first, minimal, aesthetic ("my own
+frontend, any backend"):
+- Search across library + **yt-music + spotify**, play / queue / change, browse —
+  all keyboard-driven.
+- **Architecture:** one daemon = **mopidy** + **Mopidy-YTMusic** +
+  **Mopidy-Spotify** (both backends behind one MPRIS/HTTP control surface); the
+  popup is a **custom eww frontend** querying mopidy (HTTP/MPD) for search +
+  control. The **notch** (§25) shows now-playing/mini-controls via MPRIS
+  (`playerctl`); this popup is the full search/library app.
+- Aesthetic target = the parked caelestia player (cover art · cava · calm) —
+  `docs/superpowers/mockups/PLAYER-POLISH.md`.
+- Adds one new daemon (mopidy) to sub-project A; no VPS dependency.
