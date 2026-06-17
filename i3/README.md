@@ -120,11 +120,11 @@ See `~/.config/rofi/README.md` for full rofi documentation.
 
 | Keybinding | Menu | Script/Command |
 |---|---|---|
-| `$mod+d` | App Launcher (drun) | `rofi -show drun` |
-| `$mod+Shift+d` | Run Command | `rofi -show run` |
-| `$mod+Tab` | Window Switcher | `rofi -show window` |
-| `$mod+Shift+s` | SSH | `rofi -show ssh` |
-| `$mod+Shift+f` | File Browser | `rofi -show filebrowser` |
+| `$mod+space` | App Launcher (drun) | `rofilaunch.sh d` |
+| `$mod+Tab` | Window Switcher | `rofilaunch.sh w` |
+| `$mod+Shift+s` | Run | `rofilaunch.sh --run` |
+| `$mod+Shift+f` | File Browser | `rofilaunch.sh f` |
+| `$mod+Shift+d` | Style Selector | `rofi-style-selector.sh` |
 | `$mod+F1` | Rofi Keys | `rofi -show keys` |
 | `$mod+Shift+e` | Power Menu | `rofi-power.sh` |
 | `$mod+c` | Clipboard | `rofi-clipboard.sh` |
@@ -132,14 +132,17 @@ See `~/.config/rofi/README.md` for full rofi documentation.
 | `$mod+Shift+m` | Display Manager | `rofi-display.sh` |
 | `$mod+Shift+w` | Wallpaper Picker | `rofi-wallpaper.sh` |
 | `Print` | Screenshot | `rofi-screenshot.sh` |
-| `$mod+Shift+p` | Systemd Services | `rofi-systemd.sh` |
+| `$mod+Ctrl+s` | Systemd Services | `rofi-systemd.sh` |
 | `$mod+equal` | Calculator | `rofi -show calc` |
 | `$mod+period` | Emoji Picker | `rofimoji` |
-| `$mod+slash` | Web Search | `rofi-websearch.sh` |
+| `$mod+slash` | Web Search | `rofi-websearch-v2.sh` |
 | `$mod+p` | Project Manager | `rofi-projects.sh` |
 | `$mod+g` | Git Profile | `rofi-git-profile.sh` |
 | `$mod+t` | Tmux Sessions | `rofi-tmux.sh` |
 | `$mod+Shift+o` | Firefox Bookmarks | `rofi-bookmarks.sh` |
+| `$mod+grave` | Zen Tab Switcher | `zen-tab-popup.sh` |
+| `$mod+Shift+t` | Zen Workspaces | `zen-workspaces.sh` |
+| `$mod+Shift+p` | Relaunch Polybar | `polybar/launch.sh` |
 | `$mod+n` | Obsidian Actions | `rofi-obsidian.sh` |
 | `$mod+Shift+n` | Obsidian Search | `rofi-obsidian-search.sh` |
 | `$mod+F2` | i3 Keybindings | `rofi-keybindings.sh` |

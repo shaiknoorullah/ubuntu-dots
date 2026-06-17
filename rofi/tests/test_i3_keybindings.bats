@@ -29,28 +29,28 @@ assert_binding() {
 
 # ── Core Rofi Bindings ────────────────────────────────────────
 
-@test "i3: mod+d launches drun with launcher theme" {
-    assert_binding '$mod+d' "rofi -show drun" "launcher.rasi"
+@test "i3: mod+space launches app launcher (rofilaunch)" {
+    assert_binding '$mod+space' "rofilaunch.sh"
 }
 
-@test "i3: mod+Shift+d launches run with launcher theme" {
-    assert_binding '$mod+Shift+d' "rofi -show run" "launcher.rasi"
+@test "i3: mod+Shift+d launches style selector" {
+    assert_binding '$mod+Shift+d' "rofi-style-selector.sh"
 }
 
-@test "i3: mod+Tab launches window switcher" {
-    assert_binding '$mod+Tab' "rofi -show window" "launcher.rasi"
+@test "i3: mod+Tab launches window switcher (rofilaunch)" {
+    assert_binding '$mod+Tab' "rofilaunch.sh"
 }
 
-@test "i3: mod+Shift+s launches SSH" {
-    assert_binding '$mod+Shift+s' "rofi -show ssh" "launcher.rasi"
+@test "i3: mod+Shift+s launches run (rofilaunch)" {
+    assert_binding '$mod+Shift+s' "rofilaunch.sh"
 }
 
-@test "i3: mod+Shift+f launches filebrowser" {
-    assert_binding '$mod+Shift+f' "rofi -show filebrowser" "launcher.rasi"
+@test "i3: mod+Shift+f launches file browser (rofilaunch)" {
+    assert_binding '$mod+Shift+f' "rofilaunch.sh"
 }
 
 @test "i3: mod+F1 launches rofi keys" {
-    assert_binding '$mod+F1' "rofi -show keys" "keybindings.rasi"
+    assert_binding '$mod+F1' "rofi -show keys" "clipboard.rasi"
 }
 
 # ── System Bindings ───────────────────────────────────────────
@@ -79,22 +79,26 @@ assert_binding() {
     assert_binding 'Print' "rofi-screenshot.sh"
 }
 
-@test "i3: mod+Shift+p launches systemd" {
-    assert_binding '$mod+Shift+p' "rofi-systemd.sh"
+@test "i3: mod+Ctrl+s launches systemd" {
+    assert_binding '$mod+Ctrl+s' "rofi-systemd.sh"
+}
+
+@test "i3: mod+Shift+p relaunches polybar" {
+    assert_binding '$mod+Shift+p' "polybar/launch.sh"
 }
 
 # ── Productivity Bindings ─────────────────────────────────────
 
-@test "i3: mod+equal launches calculator with calc theme" {
-    assert_binding '$mod+equal' "rofi -show calc" "calculator.rasi"
+@test "i3: mod+equal launches calculator" {
+    assert_binding '$mod+equal' "rofi -show calc" "clipboard.rasi"
 }
 
-@test "i3: mod+period launches rofimoji with emoji theme" {
-    assert_binding '$mod+period' "rofimoji" "emoji.rasi"
+@test "i3: mod+period launches rofimoji" {
+    assert_binding '$mod+period' "rofimoji" "clipboard.rasi"
 }
 
 @test "i3: mod+slash launches websearch" {
-    assert_binding '$mod+slash' "rofi-websearch.sh"
+    assert_binding '$mod+slash' "rofi-websearch-v2.sh"
 }
 
 # ── Developer Bindings ────────────────────────────────────────
@@ -115,6 +119,14 @@ assert_binding() {
 
 @test "i3: mod+Shift+o launches bookmarks" {
     assert_binding '$mod+Shift+o' "rofi-bookmarks.sh"
+}
+
+@test "i3: mod+grave launches zen tab popup" {
+    assert_binding '$mod+grave' "zen-tab-popup.sh"
+}
+
+@test "i3: mod+Shift+t launches zen workspaces" {
+    assert_binding '$mod+Shift+t' "zen-workspaces.sh"
 }
 
 # ── Notes Bindings ────────────────────────────────────────────

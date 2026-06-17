@@ -96,11 +96,11 @@ Each menu is invoked with `-theme path/to/menu.rasi`, so the global `config.rasi
 
 | Keybinding | Menu | Type | Script/Command |
 |---|---|---|---|
-| `$mod+d` | App Launcher (drun) | Core | `rofi -show drun` |
-| `$mod+Shift+d` | Run Command | Core | `rofi -show run` |
-| `$mod+Tab` | Window Switcher | Core | `rofi -show window` |
-| `$mod+Shift+s` | SSH | Core | `rofi -show ssh` |
-| `$mod+Shift+f` | File Browser | Core | `rofi -show filebrowser` |
+| `$mod+space` | App Launcher (drun) | Core | `rofilaunch.sh d` |
+| `$mod+Tab` | Window Switcher | Core | `rofilaunch.sh w` |
+| `$mod+Shift+s` | Run | Core | `rofilaunch.sh --run` |
+| `$mod+Shift+f` | File Browser | Core | `rofilaunch.sh f` |
+| `$mod+Shift+d` | Style Selector | Core | `rofi-style-selector.sh` |
 | `$mod+F1` | Rofi Keys | Core | `rofi -show keys` |
 | `$mod+Shift+e` | Power Menu | System | `rofi-power.sh` |
 | `$mod+c` | Clipboard | System | `rofi-clipboard.sh` |
@@ -108,14 +108,17 @@ Each menu is invoked with `-theme path/to/menu.rasi`, so the global `config.rasi
 | `$mod+Shift+m` | Display Manager | System | `rofi-display.sh` |
 | `$mod+Shift+w` | Wallpaper Picker | System | `rofi-wallpaper.sh` |
 | `Print` | Screenshot | System | `rofi-screenshot.sh` |
-| `$mod+Shift+p` | Systemd Services | System | `rofi-systemd.sh` |
+| `$mod+Ctrl+s` | Systemd Services | System | `rofi-systemd.sh` |
 | `$mod+equal` | Calculator | Productivity | `rofi -show calc` |
 | `$mod+period` | Emoji Picker | Productivity | `rofimoji` |
-| `$mod+slash` | Web Search | Productivity | `rofi-websearch.sh` |
+| `$mod+slash` | Web Search | Productivity | `rofi-websearch-v2.sh` |
 | `$mod+p` | Project Manager | Developer | `rofi-projects.sh` |
 | `$mod+g` | Git Profile | Developer | `rofi-git-profile.sh` |
 | `$mod+t` | Tmux Sessions | Developer | `rofi-tmux.sh` |
 | `$mod+Shift+o` | Firefox Bookmarks | Browser | `rofi-bookmarks.sh` |
+| `$mod+grave` | Zen Tab Switcher | Browser | `zen-tab-popup.sh` |
+| `$mod+Shift+t` | Zen Workspaces | Browser | `zen-workspaces.sh` |
+| `$mod+Shift+p` | Relaunch Polybar | System | `polybar/launch.sh` |
 | `$mod+n` | Obsidian Actions | Notes | `rofi-obsidian.sh` |
 | `$mod+Shift+n` | Obsidian Search | Notes | `rofi-obsidian-search.sh` |
 | `$mod+F2` | i3 Keybindings | Other | `rofi-keybindings.sh` |
