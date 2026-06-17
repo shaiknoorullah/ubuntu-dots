@@ -3,3 +3,5 @@
 skills-lock.json
 # playwright symlink for mockup rendering
 docs/superpowers/mockups/node_modules
+.secrets
+.zshrc.bak
