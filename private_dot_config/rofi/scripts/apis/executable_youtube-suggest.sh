@@ -47,7 +47,7 @@ query="$1"
 [[ -z "$query" ]] && exit 0
 
 # URL-encode the query to safely handle spaces and special characters
-encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote_plus('$query'))")
+encoded=$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote_plus(sys.argv[1]))' "$query")
 
 # Fetch YouTube-scoped suggestions (ds=yt) and extract suggestion strings
 curl -s "https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q=${encoded}" | jq -r '.[1][]'

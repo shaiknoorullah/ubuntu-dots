@@ -50,7 +50,7 @@ query="$1"
 [[ -z "$query" ]] && exit 0
 
 # URL-encode the query to safely handle spaces and special characters
-encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote_plus('$query'))")
+encoded=$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote_plus(sys.argv[1]))' "$query")
 
 # Fetch Wikipedia article title suggestions via the OpenSearch API
 curl -s "https://en.wikipedia.org/w/api.php?action=opensearch&search=${encoded}" | jq -r '.[1][]'

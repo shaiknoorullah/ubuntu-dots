@@ -75,7 +75,7 @@ if [[ "$has_blocks" == true ]]; then
     if [[ -n "$query" ]]; then
         # URL-encode the query to handle spaces, ampersands, and other
         # special characters that would break the URL.
-        encoded_query=$(python3 -c "import urllib.parse; print(urllib.parse.quote_plus('$query'))")
+        encoded_query=$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote_plus(sys.argv[1]))' "$query")
         firefox "${search_url}${encoded_query}" &
     fi
 else
@@ -94,7 +94,7 @@ else
     [[ -z "$query" ]] && exit 0
 
     # URL-encode the query using Python's urllib
-    encoded_query=$(python3 -c "import urllib.parse; print(urllib.parse.quote_plus('$query'))")
+    encoded_query=$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote_plus(sys.argv[1]))' "$query")
 
     # Open the appropriate search URL in Firefox (backgrounded to avoid blocking)
     case "$engine" in

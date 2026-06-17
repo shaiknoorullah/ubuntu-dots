@@ -44,13 +44,16 @@ trap 'rm -f "$tmp_api" "$tmp_bookmarks" "$tmp_history"' EXIT
     esac > "$tmp_api"
 ) &
 
+# Escape single quotes for safe interpolation into SQL LIKE clauses below.
+qsql="${query//\'/\'\'}"
+
 # 2. Bookmark matches (background)
 (
     zen_query_db "
         SELECT b.title, p.url FROM moz_bookmarks b
         JOIN moz_places p ON b.fk = p.id
         WHERE b.type = 1 AND b.title IS NOT NULL
-        AND (b.title LIKE '%${query}%' OR p.url LIKE '%${query}%')
+        AND (b.title LIKE '%${qsql}%' OR p.url LIKE '%${qsql}%')
         ORDER BY b.dateAdded DESC LIMIT 3;
     " 2>/dev/null | while IFS=$'\t' read -r title url; do
         echo "  $title  ·  $url"
@@ -62,7 +65,7 @@ trap 'rm -f "$tmp_api" "$tmp_bookmarks" "$tmp_history"' EXIT
     zen_query_db "
         SELECT title, url FROM moz_places
         WHERE visit_count > 0
-        AND (title LIKE '%${query}%' OR url LIKE '%${query}%')
+        AND (title LIKE '%${qsql}%' OR url LIKE '%${qsql}%')
         ORDER BY visit_count DESC, last_visit_date DESC LIMIT 3;
     " 2>/dev/null | while IFS=$'\t' read -r title url; do
         echo "  $title  ·  $url"
