@@ -113,6 +113,12 @@ bindsym $mod+Shift+n exec --no-startup-id ~/.config/rofi/scripts/rofi-obsidian-s
 bindsym $mod+F2 exec --no-startup-id ~/.config/rofi/scripts/rofi-keybindings.sh
 bindsym $mod+m exec --no-startup-id ~/.config/rofi/scripts/rofi-media.sh
 
+# ── ADHD Tools ────────────────────────────────────────────
+# NOTE: $mod+Shift+space is already taken (floating toggle), using $mod+Shift+a instead
+bindsym $mod+Shift+a exec --no-startup-id ~/.local/bin/adhd-capture.sh
+bindsym $mod+Shift+x exec --no-startup-id ~/.local/bin/adhd-focus.sh status
+bindsym $mod+Shift+Return exec --no-startup-id ~/.local/bin/adhd-start.sh
+
 # ── Volume (PulseAudio) ───────────────────────────────────
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
