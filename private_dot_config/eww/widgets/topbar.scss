@@ -1,0 +1,170 @@
+// ─────────────────────────────────────────────────────────────
+// Top bar — flanking pills  (ported from mockup #top / .barpill)
+// Colors come from SCSS vars in eww.scss.tmpl ($glass, $bd, $pill, the
+// accent-ladder $a18/$a12, surfaces $s1/$s2…). No hand-typed hex here.
+//
+// GTK CSS caveats vs the mockup: no backdrop-filter (glass is a flat alpha
+// fill), no flex gap (eww `:spacing` handles it), font-weight: bold for the
+// mockup's 600/700. Radii stay 99 (pill) per the spec.
+// ─────────────────────────────────────────────────────────────
+
+// mockup #top: height 84, padding 7px 14px 0 — eww owns the window geometry,
+// so we just pad the contents to sit under the top edge.
+.topbar {
+  padding: 7px 14px 0 14px;
+}
+
+// .barpill — the glass capsule (mockup --glass / --bd / --pill + shadow).
+.barpill {
+  background-color: $glass;
+  border: 1px solid $bd;
+  border-radius: $pill;
+  padding: 0 12px;
+  min-height: 32px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+// ── Context pill (mockup .ctxpill / .dot) ─────────────────────
+.ctxpill {
+  background-color: $a18;
+  border-radius: $pill;
+  padding: 0 12px;
+  min-height: 24px;
+}
+
+.ctxpill-label {
+  color: $fg;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+// the accent dot — inline background-color tint comes from eww-ctx accent.
+.dot {
+  min-width: 7px;
+  min-height: 7px;
+  border-radius: $pill;
+  background-color: $purple;
+}
+
+// ── Workspaces (mockup .ws / .ws b / .on / .has) ──────────────
+.ws {
+  // chips spaced by eww :spacing
+}
+
+.wschip {
+  background-color: $s1;
+  border-radius: $pill;
+  min-width: 22px;
+  min-height: 22px;
+  padding: 0 6px;
+}
+
+.wschip-label {
+  color: $comment;
+  font-size: 11px;
+}
+
+// has windows but not focused
+.wschip.has {
+  background-color: $s2;
+}
+.wschip.has .wschip-label {
+  color: $fg;
+}
+
+// focused workspace — accent fill, wider, bold
+.wschip.on {
+  background-color: $a18;
+  padding: 0 12px;
+}
+.wschip.on .wschip-label {
+  color: $fg;
+  font-weight: bold;
+}
+
+// ── Focused window title (mockup .winttl) ─────────────────────
+.winttl {
+  color: rgba(248, 248, 242, 0.7);
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+// ── Clock (mockup .clock / .clock small) ──────────────────────
+.clock-time {
+  color: $fg;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.clock-date {
+  color: $comment;
+  font-size: 11px;
+  margin-left: 8px;
+}
+
+// ── Now-playing mini (mockup .np) ─────────────────────────────
+.np {
+  color: rgba(248, 248, 242, 0.72);
+}
+
+.np-art {
+  min-width: 16px;
+  min-height: 16px;
+  border-radius: $pill;
+  // album-art placeholder: the mockup's purple→pink→orange gradient.
+  background-image: linear-gradient(135deg, $purple, $pink, $orange);
+}
+
+.np-title {
+  color: rgba(248, 248, 242, 0.72);
+  font-size: 11px;
+}
+
+// tiny equalizer — bars animate only while .on (Playing).
+.np-eq {
+  min-height: 12px;
+}
+
+.eq-bar {
+  min-width: 2px;
+  min-height: 3px;
+  border-radius: 1px;
+  background-color: $green;
+}
+
+.np-eq.on .eq-bar {
+  animation: eq-bounce 1s cubic-bezier(0.25, 1, 0.5, 1) infinite alternate;
+}
+.np-eq.on .eq-2 { animation-delay: 0.2s; }
+.np-eq.on .eq-3 { animation-delay: 0.4s; }
+.np-eq.on .eq-4 { animation-delay: 0.1s; }
+
+@keyframes eq-bounce {
+  from { min-height: 3px; }
+  to   { min-height: 12px; }
+}
+
+// ── Volume + notif "tics" (mockup .tic / .badge) ──────────────
+.tic {
+  color: rgba(248, 248, 242, 0.66);
+  padding: 0 8px;
+}
+
+.tic-icon {
+  font-size: 12px;
+}
+
+.tic-val {
+  font-size: 12px;
+}
+
+.badge {
+  background-color: $red;
+  color: $bg;
+  font-size: 9px;
+  font-weight: bold;
+  border-radius: $pill;
+  padding: 0 5px;
+  min-height: 14px;
+  min-width: 14px;
+}

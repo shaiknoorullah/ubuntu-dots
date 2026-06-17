@@ -19,6 +19,8 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 exec --no-startup-id nm-applet
 
 # Polybar (replaces i3bar)
+# NOTE: eww bars (below) replace polybar once stable. Keep polybar running
+# during the transition; retire this line when the eww bars are proven.
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
 # Compositor (transparency, blur, rounded corners)
@@ -30,8 +32,11 @@ exec_always --no-startup-id ~/.fehbg
 # Notification daemon
 exec --no-startup-id dunst
 
-# EWW widget daemon
-exec --no-startup-id eww daemon --no-daemonize &
+# EWW widget daemon + surfacing bars (Phase 2)
+# Starts the eww daemon, then opens the top + bottom bars. The left bar
+# (leftbar) is summoned on demand via $mod+Shift+i (see bindings below).
+exec_always --no-startup-id eww daemon
+exec_always --no-startup-id eww open-many topbar bottombar
 
 # Clipboard daemon
 exec --no-startup-id greenclip daemon
@@ -118,6 +123,15 @@ bindsym $mod+m exec --no-startup-id ~/.config/rofi/scripts/rofi-media.sh
 bindsym $mod+Shift+a exec --no-startup-id ~/.local/bin/adhd-capture.sh
 bindsym $mod+Shift+x exec --no-startup-id ~/.local/bin/adhd-focus.sh status
 bindsym $mod+Shift+Return exec --no-startup-id ~/.local/bin/adhd-start.sh
+
+# ── EWW Surfacing Bars (Phase 2) ──────────────────────────
+# Toggle the left "what am I chasing" bar. $mod+Shift+w was the obvious
+# pick but is taken (rofi-wallpaper); $mod+Shift+i is free and mnemonic
+# ("in focus"). Reads/flips the leftbar_open defvar in eww.yuck.
+bindsym $mod+Shift+i exec --no-startup-id eww update leftbar_open=$([ "$(eww get leftbar_open)" = "true" ] && echo false || echo true)
+# Focus mode: collapse the ambient bars (top + bottom) for distraction-free
+# work; press again to bring them back. $mod+Shift+z (z = zen) is free.
+bindsym $mod+Shift+z exec --no-startup-id sh -c 'if eww active-windows | grep -q topbar; then eww close topbar bottombar; else eww open-many topbar bottombar; fi'
 
 # ── Volume (PulseAudio) ───────────────────────────────────
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
