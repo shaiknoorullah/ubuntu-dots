@@ -90,7 +90,7 @@ CONTEXT  work · lab · agents · personal   — one keybind reconfigures all of
 
 L1 CAPTURE      $mod+key → 2s input → Obsidian REST (:27124) inbox  [+ optional task add]
 L2 TIME+TASK    taskwarrior (ctx-namespaced) + timewarrior (auto-start on task start) +
-                Pomodoro/break daemon + "start ritual" (pick task → timer → open context)
+                Flowtime deep-focus daemon (count-up, prayer-scaffolded) + "start ritual"
 L3 SURFACING    eww BAR (context · task+timer · #live sessions/agents · argocd/signoz glyph ·
                 PR count · next event) + eww DASHBOARD (Today / Live work / Infra / Rituals /
                 Learning) + eww SWITCHER (fuzzy jump across tmux sessions + Claude projects)
@@ -130,7 +130,7 @@ palette. Font stays JetBrainsMono Nerd Font.
 | Phase | Delivers | Pains | Effort | Deps |
 |---|---|---|---|---|
 | **0 Foundation** | secrets hygiene · fix repo drift · Dracula token system + retheme i3/rofi/polybar/kitty · deploy script + README | "fix & finish" | ½–1d | — |
-| **1 ADHD core** | taskwarrior+timewarrior configured · capture keybind→vault · Pomodoro/break daemon · start-ritual | A,B,C,#2,#3 | 1–2d | 0 |
+| **1 ADHD core** | taskwarrior+timewarrior · capture keybind→vault · Flowtime deep-focus daemon · idle-catch · start-ritual | A,B,C,#2,#3 | 1–2d | 0 |
 | **2 Surfacing** | eww bar · control-center dashboard · session/agent switcher | #1,#4,D + pillars | 2–3d | 1 |
 | **3 Browser** | Zen+Tridactyl+Containers · rofi profile launcher · wifi/system menus | #6,E | 1d | 0 |
 | **4 Polish** | themed lock/login · wallpaper-per-context · animations | finish | ½d | 0–3 |
@@ -216,11 +216,15 @@ and the day observable.
 - Acceptance: keybind → type → entry lands in today's daily note within ~1s;
   `t: …` also creates a task; works with no Obsidian window focused.
 
-### 1.4 Pomodoro / break daemon
-- `scripts/focus.sh` (+ a tiny state file) driving work/break intervals with
-  dunst notifications at boundaries; optional soft-lock or screen-dim on break;
-  integrates with timew (a focus block = a timew tag).
-- Acceptance: start a 25/5 cycle; notifications fire at boundaries; time recorded.
+### 1.4 Deep-focus daemon (Flowtime + prayer-scaffold — NOT pomodoro)
+> Supersedes any "pomodoro" wording elsewhere. Rationale + detail in §14.
+- `scripts/focus.sh` runs a **Flowtime** session: counts **up** from 0 (no fixed
+  box, overtime never force-stops), one task, tagged into timew. Breaks are
+  **earned/scaffolded**, not forced — the big timer counts toward the **next
+  salah**; a **gentle, dismissible** dunst nudge fires only if a single session
+  exceeds ~90 min (operator decision 2026-06-18). Hard lock/dim stays opt-in.
+- Acceptance: `focus start <task>` starts a count-up timew interval; the ~90-min
+  nudge appears and is dismissible; no session is ever auto-terminated.
 
 ### 1.5 Start ritual
 - `scripts/start.sh`: rofi-pick a `next` task → `task start` (→ timer) → switch to
@@ -237,8 +241,8 @@ and the day observable.
    tmux/dir mapping in §3 — correct, or split/merge any?
 2. **Capture target:** daily-note `## Inbox` (chosen) vs a dedicated
    `journal/inbox.md` rolling file — preference?
-3. **Break enforcement strength:** soft (notification only) vs hard (dim/lock)
-   on Pomodoro breaks?
+3. ~~Break enforcement~~ — **RESOLVED 2026-06-18: prayer-scaffolded Flowtime with
+   a gentle, dismissible ~90-min nudge** (no pomodoro, no forced break). See §14.
 4. **Phase 0.2 scope:** if the five "missing" scripts genuinely don't exist on
    disk, are you OK with me repointing those bindings to existing equivalents
    rather than writing new menu scripts now (deferring new menus to later)?
@@ -344,8 +348,9 @@ author:@me`) · next event · capture button.** Focus-mode collapses the bar to 
   move. **Backed by taskwarrior** (`task export` → render; moves call `task`),
   NOT a separate json. Approximate Brain-Shell's drag (button-move + 100ms
   color-flash); **drop the QtQuick spring/3D-tilt** (not portable).
-- **Pomodoro** — preset chips `[5/10/15/30]`, progress ring, `notify-send` on
-  finish, writes a Timewarrior tag. (Phase-1 focus daemon's UI.)
+- **Deep-focus (Flowtime)** — count-up timer toward the next salah, one task/
+  outcome, est-vs-actual, gentle 90-min nudge. The Phase-1 focus daemon's UI.
+  (NOT pomodoro — see §14.)
 - **QuickSettings** — optimistic toggles: **Caffeine** (`systemd-inhibit`),
   **DND** (`dunstctl set-paused`), Night Light (`gammastep`), WiFi/BT.
 - **Live work** — the ~20 tmux sessions grouped by context + active Claude
@@ -369,4 +374,137 @@ author:@me`) · next event · capture button.** Focus-mode collapses the bar to 
 `haikal-hakim/athena-eww` (eww bar+menus blueprint) ·
 `caelestia-dots/shell` + `caelestia/zen/userChrome.css` (M3 token discipline +
 zero-chrome CSS) · `Brainitech/Brain_Shell` (kanban/timer/quicksettings UX).
-```
+
+---
+
+# Addendum v2 (2026-06-18) — focus model, 3-bar UI, integrations, data plane
+
+> Grounded in the operator's vault doctrine (`journal/manifesto.md`,
+> `subject-profile.md`, `blueprint/research/domain/*`) and a Super Productivity
+> study. Mockup: `docs/superpowers/mockups/` (HTML prototype + stills + video).
+> **Hard design rule from the manifesto:** every capture/log is **≤2 actions**
+> ("two-step vs five-step = adoption vs abandonment", `CLAUDE.md:27`).
+
+## 14. Focus & life-tracking model (replaces pomodoro everywhere)
+
+**Doctrine.** Friction-minimal · externalize at the point of performance
+(Barkley) · interest/novelty/urgency, never "importance" (Dodson PINCH) ·
+collapse delayed rewards into real-time visible progress (temporal discounting) ·
+**never punish inconsistency** (RSD → shame-free, see §14.4).
+
+**14.1 Deep-focus = Flowtime, scaffolded by salah.** Count-up, one outcome per
+block, overtime never force-stopped. The day's architecture is the five prayers
+(`04-islamic-productivity.md`): each inter-prayer window holds 2–3 sessions; the
+big timer counts toward the **next salah**; salah *is* the prescribed recovery.
+Gentle dismissible nudge only past ~90 min. Modes: Flowtime (default) ·
+Countdown/timebox (opt-in) · **no pomodoro**.
+
+**14.2 Idle-catch (highest-ADHD-value).** `xprintidle` daemon; on return from
+>~10 min idle, a ≤2-tap eww popup: *assign the gap to the current task ·
+discard · log as break/walk*. Stops silently-lost time. (From Super Productivity.)
+
+**14.3 Tasks/time are decoupled (free architecture).** taskwarrior = tasks
+(`+today` curated pull-list, projects = contexts, `estimate` UDA) · timewarrior =
+intervals (est-vs-actual, per-context summaries) · a small JSON store =
+metrics/streaks/reflections. No bespoke DB needed locally.
+
+**14.4 Metrics = encouraging, never DORA.** Subjective daily reflection
+(impact 1–4, energy 1–3 — already in the daily-note frontmatter) + **simple-
+counter streaks** (consistency/focus-score, gamified with *variable* praise per
+RPE) + time-trend bars (`timew summary`). Missed days are **silent, never red**.
+
+**14.5 Life-tracking writes into the EXISTING daily-note schema.** The bottom-bar
+trackers are one-tap toggles that PATCH today's `journal/daily/DD-MM-YYYY.md`
+frontmatter via the Obsidian REST API (`:27124`): `salah{fajr..isha}`, `adhkar`,
+`quran-minutes`, `mood`, `energy`, `sleep`, `selfcare`, `meals`, `triggers`,
+`exercise`. **New fields to add:** `office{in,out}`, `time-categories` (work-at-
+home / sleep / travel / travel-break / break / coffee / walk / washroom),
+`time-per-project` (from timew). Each emits an append-only event for the VPS
+(§17) so traffic/commute predictions and time analytics become possible.
+
+**14.6 Learn-in-the-gaps.** Spaced-repetition (vault `obsidian-spaced-
+repetition`, `learning/`) surfaces 1 tiny card on break/walk start (JITAI). Small
+× many breaks × spacing = compounding. Depends on §17 data plane.
+
+## 15. The 3-bar desktop (replaces the single-bar L3 surfacing)
+
+Per the operator's layout and the mockup. All eww; near-monochrome + accent-on-
+state; calm motion only.
+- **TOP (always on, minimal):** workspaces · focused window · clock · now-playing
+  · sound/notifications · context pill.
+- **LEFT (summoned, "what am I chasing"):** big prayer-scaffolded timer · salah
+  strip · **master AI agent** (§17) · now/next tasks · calendar · pending email ·
+  yt-music · learn-in-the-gaps · focus-mode toggle. Hides the bottom bar when open.
+- **BOTTOM (context bar):** project · context · branch · active task + elapsed ·
+  encouraging stats (focus-score, streak, coffee, walks) · gamified, shame-free.
+- **FOCUS MODE:** hides everything but the timer + one task + prayer runway.
+
+## 16. Sub-project C — work integrations (issue-provider pattern)
+
+One interface (Super Productivity's model): `search · getNewToBacklog ·
+getFreshDiff · defaultProject/Tag/Note`. Each source = a thin adapter polled by a
+**systemd timer / VPS poller** that writes into **taskwarrior** + surfaces in the
+bars:
+- **Linear** (GraphQL) → tickets as `+work` tasks, status badges.
+- **Slack** (saved messages / reminders / mentions) → action items + left-bar count.
+- **Email** (Gmail API / IMAP) → flagged mail as tasks + left-bar inbox count.
+- **Calendar** (GCal / CalDAV) → events in the left bar + next-event in top bar.
+These are "things you can't take home" surfaced locally without the work laptop.
+
+## 17. Sub-project D — data plane, master AI agent & VPS self-hosting
+
+This is the **companion runtime** the vault has been blocked on
+(`blueprint/.../03-deployment-plan.md`: Postgres event-sourced L5 → Analyst L6).
+
+**17.1 Master AI agent (left-bar "ask anything").** A small agent service holding
+**full context** — vault (REST), taskwarrior/timew, ActivityWatch, git/k8s state,
+the event store — and **routing across models via LiteLLM** (operator already
+runs `litellm`): **Gemini** (Google subscription) · **Claude** · **local**
+(Ollama/LM Studio, both installed) · **NotebookLM** (Drive corpus) for deep
+research. Left bar posts a query → agent retrieves context → routes to the chosen
+model → returns. Runs locally first; promotable to the VPS.
+
+**17.2 VPS self-hosting stack (central server; Contabo Mumbai, `cntb`).**
+| Concern | Tool | Notes |
+|---|---|---|
+| Reverse proxy / TLS | **Caddy** | per the blueprint deployment plan |
+| Identity | Authelia or Entra SSO | the operator already uses Entra for infra |
+| Event store | **PostgreSQL** (append-only) | L5 time-series per blueprint |
+| Vault/journal sync | **Syncthing** (or git) | plain-file sync; no pfapi needed |
+| Password manager | **Vaultwarden** (self-hosted Bitwarden) | also backs chezmoi secrets |
+| Agent runtime | LiteLLM + the Hermes/`powerhouse-system` runtime | model routing + skills |
+| Integration pollers | systemd timers (Linear/Slack/email/cal) | §16 |
+| Activity store | **ActivityWatch** server | aggregates per-host watchers |
+| Health ingest | Amazfit/Zepp → Gadgetbridge/Zepp export → Postgres | §14.5 life data |
+| Finance ingest | adapter → Postgres | life-goals dashboard |
+| Secure access | **WireGuard** (or Tailscale) | reach the VPS privately |
+| Backups | **restic → Google Drive via rclone**, daily systemd timer | `restic` present; add `rclone` |
+
+**17.3 Backups.** Daily `restic` snapshot of Postgres + vault + configs, pushed to
+**Google Drive** (rclone remote) — the operator's large Drive is the offsite. VPS
+is primary; Drive is the daily backup target.
+
+## 18. Revised roadmap (sub-projects)
+
+The system is now explicitly multiple subsystems; each ships independently.
+
+| Sub-project | Phases (this doc) | Near-term? |
+|---|---|---|
+| **A · Desktop UI** | 0 Foundation · 2 Surfacing(=3-bar §15) · 3 Browser | ✅ now |
+| **B · Focus & life-tracking** | 1 ADHD core (§14) | ✅ now |
+| **C · Work integrations** | issue-provider pollers (§16) | mid |
+| **D · Data plane / AI agent / VPS** | §17 (agent local-first → VPS → backups) | mid/later |
+| **E · Learn-in-the-gaps** | §14.6 (needs B + D) | later |
+
+**Build order unchanged at the front:** Phase 0 → Phase 1, then the 3-bar (Phase
+2) and browser (Phase 3). The master AI agent starts **local-first** in Phase 1/2
+(LiteLLM routing, left-bar input) and graduates to the VPS in sub-project D.
+
+## 19. New open questions (v2)
+
+6. **VPN choice:** WireGuard (self-managed) vs Tailscale (easier mesh)?
+7. **Password manager:** Vaultwarden (self-host, recommended) — confirm vs keeping
+   an existing manager.
+8. **Health data path:** does the Amazfit sync via Gadgetbridge (Android) or the
+   Zepp web export? (Determines the ingest adapter.)
+9. **AI agent home:** local-first now, VPS later (recommended) — or VPS from day 1?
