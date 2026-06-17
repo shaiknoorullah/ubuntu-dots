@@ -353,6 +353,17 @@ window.setState=(s)=>{body.className='';body.classList.add('state-'+s);};
 window.setPalette=(open)=>{body.classList.toggle('pal-open',open);};
 window.setCaption=(t)=>{const c=document.getElementById('cap');
   if(!t){body.classList.remove('cap');return;} c.textContent=t;body.classList.add('cap');};
+// ── Interactive viewing: number keys / click to switch states ──
+const STATES=['idle','left','focus','browser'];
+function go(n){window.setPalette(false);if(n===5){window.setState('browser');window.setPalette(true);}
+  else window.setState(STATES[n-1]||'idle');hint.textContent='now: '+(n===5?'browser + palette':STATES[n-1]);}
+window.addEventListener('keydown',e=>{if(e.key>='1'&&e.key<='5')go(+e.key);});
+const hint=document.createElement('div');
+hint.style.cssText='position:fixed;right:14px;bottom:46px;z-index:90;font:11px var(--mono);'+
+ 'color:var(--comment);background:rgba(10,11,16,.82);border:1px solid var(--bd);'+
+ 'border-radius:99px;padding:7px 14px';
+hint.textContent='press  1 idle · 2 left · 3 focus · 4 browser · 5 palette';
+document.body.appendChild(hint);
 </script>
 </body>
 </html>
