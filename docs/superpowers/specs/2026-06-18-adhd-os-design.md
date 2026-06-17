@@ -455,6 +455,9 @@ These are "things you can't take home" surfaced locally without the work laptop.
 
 This is the **companion runtime** the vault has been blocked on
 (`blueprint/.../03-deployment-plan.md`: Postgres event-sourced L5 → Analyst L6).
+NOTE: the vault's `powerhouse-system` runtime has been **ditched and replaced**;
+the replacement is the orchestration substrate this data plane plugs into —
+identify it before building D (open Q10).
 
 **17.1 Master AI agent (left-bar "ask anything").** A small agent service holding
 **full context** — vault (REST), taskwarrior/timew, ActivityWatch, git/k8s state,
@@ -472,7 +475,7 @@ model → returns. Runs locally first; promotable to the VPS.
 | Event store | **PostgreSQL** (append-only) | L5 time-series per blueprint |
 | Vault/journal sync | **Syncthing** (or git) | plain-file sync; no pfapi needed |
 | Password manager | **Vaultwarden** (self-hosted Bitwarden) | also backs chezmoi secrets |
-| Agent runtime | LiteLLM + the Hermes/`powerhouse-system` runtime | model routing + skills |
+| Agent runtime | LiteLLM + **{current orchestration runtime — TBD}** | `powerhouse-system` was ditched; replacement name pending operator (open Q10) |
 | Integration pollers | systemd timers (Linear/Slack/email/cal) | §16 |
 | Activity store | **ActivityWatch** server | aggregates per-host watchers |
 | Health ingest | Amazfit/Zepp → Gadgetbridge/Zepp export → Postgres | §14.5 life data |
@@ -508,3 +511,6 @@ The system is now explicitly multiple subsystems; each ships independently.
 8. **Health data path:** does the Amazfit sync via Gadgetbridge (Android) or the
    Zepp web export? (Determines the ingest adapter.)
 9. **AI agent home:** local-first now, VPS later (recommended) — or VPS from day 1?
+10. **Orchestration runtime:** `powerhouse-system` was ditched — what replaced it?
+    (Candidates seen on the machine: `opsbench`, `agenthive`, `nanoclaw`, the
+    `maestro`/`pi-fleet` system.) The data plane (§17) plugs into this.
