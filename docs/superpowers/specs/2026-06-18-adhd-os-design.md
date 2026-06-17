@@ -245,4 +245,128 @@ and the day observable.
 5. ~~Stow vs symlink~~ — **RESOLVED 2026-06-18: chezmoi** (templating for theme
    tokens + encrypted secrets). Phase 0.4 restructures the repo to chezmoi source
    layout; confirm you're OK with that restructure.
+
+---
+
+## 11. Aesthetic & Motion system (cross-cutting; feeds Phases 0, 2, 3)
+
+Derived from studying `haikal-hakim/athena-eww` (the eww blueprint),
+`matteogini/dotfiles` (OLED-minimal), `caelestia-dots` (Material-3 token
+discipline), and Brain Shell (`Brainitech/Brain_Shell`). **Palette = Dracula**
+(operator decision 2026-06-18); we adopt their *structure*, skinned in Dracula.
+
+### 11.1 Token scale (one source → chezmoi `.chezmoidata.yaml`)
+- **Spacing / radius scale (shared):** `4 · 8 · 12 · 16 · 20 · 28 · 32 · 48`.
+  Cards/popups radius `16`, floating bar `24`, pills/segments `99 (full)`,
+  chips/buttons `8`. 1px borders everywhere.
+- **Font scale:** `xs 10 · sm 12 · base 14 · lg 16 · xl 18`. Global
+  JetBrainsMono Nerd Font; big clock 72px (letter-spacing −4). Optional: a
+  glyph-safe sans (Rubik) for clock/workspace numerals to avoid broken glyphs.
+- **Alpha-ladder (the whole look, cheap):** surfaces over base —
+  `rgba(fg, .03–.05)`; borders `rgba(fg, .07–.12)`; hover `rgba(fg, .08–.12)`;
+  accent (Dracula purple `#BD93F9`) state tints at `.12 / .18 / .35`. Glass
+  panel `rgba(40,42,54,.85)`. Per-context accent rides the accent slot.
+- **Semantic state colors (Dracula):** high/urgent `#FF5555`, med `#F1FA8C`,
+  low/ok `#50FA7B`, info `#8BE9FD`.
+
+### 11.2 Motion vocabulary
+**Portable to eww/GTK-CSS on i3 (our entire motion budget):**
+- Revealer reveals: `slideup / slideleft / slideright / slidedown`, ~`250ms`.
+- GTK transitions: `transition: all .2s cubic-bezier(.25,1,.5,1)`; press
+  micro-interaction `scale .95` over `.15s`; icon lift
+  `-gtk-icon-transform: scale(1.1) translateY(-3px)` on hover.
+- Springy reveal easing `cubic-bezier(.38,1.21,.22,1)` (overshoot) for accents.
+- Workspace dot: width `10→24px` + a `@keyframes` breathing pulse on active.
+- Toast auto-dismiss: a 5s linear width→0 progress bar (time-remaining without
+  reading — strong ADHD affordance).
+- Brain-Shell global motion duration ≈ `320ms` for panel expand/collapse.
+
+**NOT portable (honest scope cut):** window open/close/workspace/morph
+animations are compositor-level (Hyprland). i3 + picom give only fade/blur. All
+window-level motion is out of scope; motion lives in eww widgets + browser CSS.
+
+### 11.3 X11 tool substitutions (vs the Wayland references)
+`hyprsunset → redshift/gammastep` · `hyprlock → i3lock-color/betterlockscreen` ·
+`hyprctl → i3-msg` · Hyprland special-workspace pre-warm → **i3 scratchpad** ·
+compositor blur → **picom** (already configured) · matugen wallpaper-derived →
+**fixed Dracula** via chezmoi tokens.
+
+## 12. Browser design (Phase 3 detail) — Aether Canvas, Dracula-skinned
+
+**Goal:** literally no tabs, no chrome — full-bleed page; everything summoned.
+
+### 12.1 Zero-chrome Canvas (`zen/userChrome.css`)
+- Hide `#TabsToolbar`, `#nav-bar`, `#navigator-toolbox`, the sidebar, and
+  `.titlebar-buttonbox-container`. Baseline = Zen **compact mode**; Canvas takes
+  it to nothing. Bind one key to reveal chrome (`reveal_on: keybind`).
+- Steal from `caelestia/zen/userChrome.css`: center idle urlbar
+  (`#urlbar:not([focused]) .urlbar-input{text-align:center}`), 10px-round the
+  urlbar/searchbar, dim unloaded tabs
+  (`.tabbrowser-tab[pending]{filter:grayscale(1);opacity:.5}`), floating-urlbar
+  reveal `@keyframes` (opacity 0→1, scale .8→1.02→1, 200ms ease-out), global
+  `*{border:0;outline:0}` + `:active{scale:.95;transition:all .15s}`. Skin all to
+  Dracula via chezmoi-templated CSS vars.
+
+### 12.2 Summoned overlays (Tridactyl `.tridactylrc`, Aether keybinds)
+| Action | Bind | Implementation |
+|---|---|---|
+| Command palette | `Space` | rofi command menu (themed Dracula) via Tridactyl `exclaim`, for the "beautiful overlay" look |
+| Omni / URL | `g o` | `fillcmdline open` |
+| Fuzzy tab switch | `Tab` | `:tabsearch` / `buffers` |
+| Capture | `g c` | script: URL+selection → vault REST inbox (shares Phase 1 capture) |
+| AI sidebar | `g a` | toggle sidebar panel |
+| Focus mode | `g f` | extra chrome off + distraction blocklist on |
+Tridactyl set to modal (Normal/Insert/Command). Overlays (tab search, workspace
+/container pickers, palette) prefer **rofi** themed to Dracula for the polished
+centered-fuzzy feel ("vim power without the ugliness").
+
+### 12.3 Spatial model (mirror Aether's hierarchy)
+Zen **Workspaces** = one per project (scoped tabs/state) · **Multi-Account
+Containers** = identity/cookie isolation per context · tab folders/split = groups
+· **rofi profile-launcher** (`firefox -P <ctx> --class <ctx>`) for full-isolation
+switch. All switching via fuzzy overlay pickers. Pre-warm Zen on an i3
+**scratchpad** at login so the browser keybind feels instant.
+
+## 13. Dashboard & menus (Phase 2 detail)
+
+Blueprint: `haikal-hakim/athena-eww` structure (yuck + `tokens.scss`). Reuse the
+existing Dracula eww notif center.
+
+### 13.1 Bar (floating pill, glass centerbox radius 24, 3 segments radius 99)
+Near-monochrome; accent only on state. Widgets (Aether's set):
+**context (color) · active task + live Timewarrior timer · #live tmux
+sessions/agents · ArgoCD+SigNoz health glyph · open PRs (`gh`, `is:pr is:open
+author:@me`) · next event · capture button.** Focus-mode collapses the bar to a
+~6px strip (Brain-Shell idea).
+
+### 13.2 Control center (slide-down/morph revealer, tabs)
+- **Tasks (Kanban)** — To Do / Doing / Done, per-card urgency color, `←/→` to
+  move. **Backed by taskwarrior** (`task export` → render; moves call `task`),
+  NOT a separate json. Approximate Brain-Shell's drag (button-move + 100ms
+  color-flash); **drop the QtQuick spring/3D-tilt** (not portable).
+- **Pomodoro** — preset chips `[5/10/15/30]`, progress ring, `notify-send` on
+  finish, writes a Timewarrior tag. (Phase-1 focus daemon's UI.)
+- **QuickSettings** — optimistic toggles: **Caffeine** (`systemd-inhibit`),
+  **DND** (`dunstctl set-paused`), Night Light (`gammastep`), WiFi/BT.
+- **Live work** — the ~20 tmux sessions grouped by context + active Claude
+  agents, each clickable to focus (`i3-msg` + `tmux switch/attach`). (Pain D/#1.)
+- **Infra** — ArgoCD / SigNoz / cluster status at a glance (morning ritual in one
+  panel, not five tabs).
+- **Learning** — spaced-repetition due count + current courses from
+  `~/powerhouse/learning/`.
+
+### 13.3 Menu patterns (eww revealers + GTK CSS)
+- **Hover-reveal dock launcher** (`slideup 250ms`, icons grow+lift on hover).
+- **Two-click-confirm power menu** — one revealer; first click swaps icon to a
+  `?` glyph + per-action accent, second executes. No separate dialog.
+- **Gradient OSD sliders** — trough `rgba(fg,.1)`, fill gradient (volume
+  cyan→purple, brightness yellow→orange), circular knob w/ soft shadow; reuse in
+  bar OSD + control-panel sliders.
+- **Edge slide-in popups** (network/audio/notifications) via per-popup `open` var
+  + revealer; **auto-dismiss toast** with the 5s shrinking bar.
+
+### 13.4 Reference repos to keep open while building
+`haikal-hakim/athena-eww` (eww bar+menus blueprint) ·
+`caelestia-dots/shell` + `caelestia/zen/userChrome.css` (M3 token discipline +
+zero-chrome CSS) · `Brainitech/Brain_Shell` (kanban/timer/quicksettings UX).
 ```
