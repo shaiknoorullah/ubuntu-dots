@@ -19,16 +19,15 @@ picom provides the visual layer on top of i3:
 
 | Feature | Setting |
 |---|---|
-| Backend | GLX |
-| Blur | `dual_kawase`, strength 8 |
-| Active opacity | 92% (wallpaper visible through windows) |
+| Backend | GLX (`glx-no-stencil`, `vsync`) |
+| Blur | `dual_kawase`, strength 5 |
+| Active opacity | 95% |
 | Inactive opacity | 85% |
-| Kitty | 80% focused, 70% unfocused |
-| Rofi | 100% (handles its own transparency) |
-| Fullscreen | 100% (no transparency) |
-| Corners | Rounded (radius 8), excluded for Polybar/Rofi |
-| Shadows | Enabled (radius 12), excluded for notifications/Polybar |
-| Fading | Enabled (smooth window open/close transitions) |
+| Frame opacity | 90% |
+| Fullscreen | 100% (opacity-rule) |
+| Corners | Rounded (radius 12); excluded for dock/desktop/fullscreen |
+| Blur exclude | dock, desktop, GTK frame extents |
+| Fallback | xrender config when no direct rendering (see `launch.sh`) |
 
 Config: `~/.config/picom/picom.conf`
 

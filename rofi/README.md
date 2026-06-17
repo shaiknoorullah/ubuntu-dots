@@ -13,7 +13,8 @@ The fullscreen overlay effect works through a collaboration between Rofi and pic
 - This triggers picom's `dual_kawase` blur on the desktop behind
 - Content boxes (inputbar, listview, mode-switcher) use SOLID opaque backgrounds
 - Result: blurred desktop with crisp, readable content on top
-- picom.conf has `"100:class_g = 'Rofi'"` in `opacity-rule` to prevent double-opacity
+- Rofi handles its own transparency via the theme; if picom ever reduces it, add
+  `"100:class_g = 'Rofi'"` to `opacity-rule` in picom.conf (not currently set)
 
 ### Theme Layering System
 
@@ -159,8 +160,8 @@ Each menu is invoked with `-theme path/to/menu.rasi`, so the global `config.rasi
 
 The following picom.conf settings are critical:
 
-- `blur-method = "dual_kawase"` and `blur-strength = 8` - enables blur behind rofi
-- `"100:class_g = 'Rofi'"` in `opacity-rule` - prevents picom from reducing rofi's opacity
+- `blur-method = "dual_kawase"` and `blur-strength = 5` - enables blur behind rofi
+- Rofi is NOT in `blur-background-exclude` - blur must apply behind it
 - Rofi is in `rounded-corners-exclude` - fullscreen window should not get rounded corners
 - Rofi is NOT in `blur-background-exclude` - blur must apply
 

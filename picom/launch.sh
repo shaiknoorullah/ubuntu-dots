@@ -4,7 +4,7 @@ pkill picom 2>/dev/null
 sleep 0.2
 
 if glxinfo 2>/dev/null | grep -q 'direct rendering: Yes'; then
-    picom -b --config ~/.config/picom.conf
+    picom -b --config ~/.config/picom/picom.conf
 else
-    picom -b --config ~/.config/picom-xrender.conf
+    picom -b --config ~/.config/picom/picom-xrender.conf
 fi
