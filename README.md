@@ -1,35 +1,99 @@
 # ubuntu-dots
 
-Personal Ubuntu 24.04 / X11 / i3 dotfiles — managed with **chezmoi**, themed
-**Dracula**, evolving into a context-driven ADHD-support desktop.
+Personal **Ubuntu 24.04 / Hyprland (Wayland)** dotfiles — managed with
+**chezmoi**, themed **Dracula**, built as a context-driven **ADHD-support
+desktop**. i3/X11 remains as a fallback session.
 
 > Full design: [`docs/superpowers/specs/2026-06-18-adhd-os-design.md`](docs/superpowers/specs/2026-06-18-adhd-os-design.md)
-> Phase plans: [`docs/superpowers/plans/`](docs/superpowers/plans/) · Mockup: [`docs/superpowers/mockups/`](docs/superpowers/mockups/)
+> Plans: [`docs/superpowers/plans/`](docs/superpowers/plans/) · Mockups: [`docs/superpowers/mockups/`](docs/superpowers/mockups/) · Hyprland migration notes: [`docs/HYPRLAND-MIGRATION.md`](docs/HYPRLAND-MIGRATION.md)
+
+## What this is
+
+A keyboard-driven, glass-aesthetic desktop whose #1 job is supporting ADHD:
+deep-focus **Flowtime** blocks (no pomodoro) scaffolded by **Salah (prayer)
+times**, shame-free gamified life-tracking, and a fast in-shell task command
+center — all in hard **Dracula**.
+
+- **Compositor** — Hyprland 0.55 (Wayland), configured in **Lua**
+  (`hyprland.lua`; 0.55 dropped the old hyprlang `.conf`). Compositor blur gives
+  real glass on the bars. NVIDIA (RTX 4090) proprietary driver.
+- **Shell** — a 3-bar **quickshell** (QtQuick) shell: a top bar
+  (context · workspaces · **Dynamic Island** media notch · clock), a bottom
+  context/stats bar, and a summoned left "what am I chasing" drawer.
+- **Focus engine** — taskwarrior + timewarrior + prayer-scaffolded Flowtime; a
+  multi-page **focus/task panel** (`Super+Shift+Return`) to start blocks and
+  manage every task field, fully keyboard-navigable.
 
 ## Model
 
-This repo **is** the chezmoi source directory. chezmoi renders/deploys it to `$HOME`.
+This repo **is** the chezmoi source dir; chezmoi renders/deploys it to `$HOME`.
 
-- `dot_config/…`  → `~/.config/…`  (the deployed configs: i3, rofi, polybar, kitty, picom)
-- `encrypted_private_dot_secrets.age` → `~/.secrets` (age-decrypted on apply)
-- `.chezmoidata.yaml` — the **single Dracula palette** every themed config templates from
-- `.chezmoiignore` — keeps non-deploy paths (`docs/`, `tests/`, `keyd/`) out of `$HOME`
-- `*.tmpl` files are Go templates (colors pulled from `.chezmoidata.yaml`)
+| Source prefix | Deploys to | Notes |
+|---|---|---|
+| `private_dot_config/…` | `~/.config/…` (0700) | hypr, quickshell, eww, rofi, kitty, fontconfig, systemd/user |
+| `private_dot_local/…` | `~/.local/…` (0700) | `bin/` — the ADHD + shell scripts |
+| `dot_task/hooks/…` | `~/.task/hooks/…` | taskwarrior on-modify → timewarrior + snapshot |
+| `encrypted_private_dot_secrets.age` | `~/.secrets` | age-decrypted on apply |
+| `.chezmoidata.yaml` | — | the single **Dracula palette** every themed config templates from |
+| `.chezmoiignore` | — | keeps `docs/`, `tests/`, `keyd/` out of `$HOME` |
 
-Not deployed (repo tooling): `docs/` (specs, plans, mockups), `tests/` (bats),
-`keyd/` (system-level, lives at `/etc/keyd`).
+`*.tmpl` files are Go templates (colors pulled from `.chezmoidata.yaml`).
+
+## The shell (quickshell via distrobox)
+
+quickshell needs **Qt 6.6+** but Ubuntu 24.04 ships Qt 6.4, so the shell runs
+from an **Arch `distrobox`** container with host Wayland + NVIDIA + fonts passed
+through. The QML config (`private_dot_config/quickshell/`) renders on the host
+Hyprland as layer-shell surfaces.
+
+- `~/.local/bin/quickshell-setup` — reproducibly (re)creates the Arch box and
+  installs `quickshell` + Qt6 + `task`/`timew`/`jq`/`playerctl`/`grim`.
+- `~/.local/bin/quickshell-launch` — launches it (wired into `hyprland.lua`
+  autostart); `qs-ipc` forwards IPC into the container.
+- **Host bridge:** the container's taskwarrior 3.x can't read the host's 2.6.2
+  data, so reads go through host-exported JSON (`~/.cache/adhd/tasks.json`) and
+  writes are queued to `~/.cache/adhd/{start-request,task-cmd}` and run by host
+  **systemd user path units** (`adhd-block.path`, `adhd-task-cmd.path`).
+
+## ADHD focus system
+
+- **Prayer-scaffolded Flowtime** — offline prayer times (adhanpy, Hanafi,
+  Hyderabad) using **Iqamah** (congregation) times; deep blocks count *up* and
+  never scold (`adhd-focus.sh`, `adhd-prayer-times.sh`).
+- **Focus/task panel** (`Super+Shift+Return`) — multi-page: Focus (quick
+  start/search), Tasks (filterable list), Detail (edit every field), Projects,
+  Tags, Reports. Keyboard: `Tab`/`1–5` switch pages, `↑↓`/`jk` move, `Enter`
+  acts, `Esc` closes.
+- **Left drawer** (`Super+A`) — BIG live block timer, salah runway, task list.
+
+### Key bindings (Hyprland)
+| Key | Action |
+|---|---|
+| `Super+Shift+Return` | open the focus/task panel |
+| `Super+A` | toggle the left "what am I chasing" drawer |
+| `Super+Shift+A` | quick-capture |
+| `Super+Return` | terminal (kitty) · `Super+Space` rofi launcher |
+| `Super+Escape` | hyprlock |
 
 ## Install on a new machine
 
 ```bash
-# prerequisites
-sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin   # chezmoi
-sudo apt-get install -y age                                # age (encryption)
+# 1. chezmoi + age
+sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin
+sudo apt-get install -y age
+# restore the age key to ~/.config/chezmoi/key.txt (from your password manager)
 
-# restore your age key to ~/.config/chezmoi/key.txt (from your password manager), then:
-chezmoi init https://github.com/shaiknoorullah/ubuntu-dots   # or your remote
-chezmoi diff        # preview every change before it touches ~
-chezmoi apply       # deploy
+# 2. deploy dotfiles
+chezmoi init git@github.com:shaiknoorullah/ubuntu-dots.git
+chezmoi diff      # preview every change first
+chezmoi apply
+
+# 3. system pieces (need sudo / one-time)
+#  - Hyprland (cppiber PPA) + NVIDIA proprietary driver
+#  - enable the host actuators:
+systemctl --user enable --now adhd-block.path adhd-task-cmd.path
+#  - build the quickshell runtime container:
+quickshell-setup
 ```
 
 `~/.config/chezmoi/chezmoi.toml` sets `sourceDir`, `encryption = "age"`, and the
@@ -37,30 +101,30 @@ key path/recipient.
 
 ## Theme
 
-**Dracula** (the operator's own variant — base `#1a1a2e`, fg `#f8f8f2`, purple
-`#bd93f9`, green `#50fa7b`, red `#ff4d4d`, orange `#ff9e3b`, yellow `#f5d547`),
-defined once in `.chezmoidata.yaml`. Change a hex there + `chezmoi apply` →
-every templated config updates.
-
-- **Templated to the palette:** i3 borders, kitty colors.
-- **Already Dracula (left as-is):** polybar, the eww notification center.
-- **Pending:** rofi (its live `style_N` themes will be **replaced by eww shell
-  widgets**, not retro-themed).
+**Dracula** (operator variant — base `#1a1a2e`, fg `#f8f8f2`, purple `#bd93f9`,
+pink `#ff79c6`, cyan `#8be9fd`, green `#50fa7b`, orange `#ff9e3b`, red `#ff4d4d`,
+yellow `#f5d547`), defined once in `.chezmoidata.yaml`. Context accents:
+work=purple · lab=pink · agents=cyan · personal=green. Change a hex + `chezmoi
+apply` → every templated config (hyprland.lua borders, quickshell theme, kitty)
+updates. Fonts: **JetBrainsMono Nerd Font** everywhere, Noto for CJK/emoji.
 
 ## Secrets
 
-API keys live in `~/.secrets` (sourced by `~/.zshrc`), managed **age-encrypted**
-by chezmoi. The decrypt key is `~/.config/chezmoi/key.txt` — **never committed;
+API keys live in `~/.secrets` (sourced by `~/.zshrc`), **age-encrypted** by
+chezmoi. The decrypt key is `~/.config/chezmoi/key.txt` — **never committed;
 back it up to your password manager** (losing it = unrecoverable secrets).
 
 ## Status
 
-- **Phase 0 (foundation): complete** — drift fixed, secrets encrypted, chezmoi
-  adopted the real live config, i3 + kitty on Dracula.
-- Phase 1+ (capture, time/task engine, 3-bar eww UI, browser, data plane): see the spec.
+- ✅ **Foundation** — chezmoi adopted, secrets encrypted, Dracula palette.
+- ✅ **Hyprland (Wayland)** — Lua config, blur/glass, NVIDIA fixed, JetBrainsMono.
+- ✅ **quickshell 3-bar shell** — top/bottom/left bars, Dynamic Island (real
+  cover art), live data via the host bridge.
+- ✅ **ADHD focus loop** — prayer-scaffolded Flowtime, live BIG timer.
+- ✅ **Focus/task panel** — multi-page taskwarrior front-end, full keyboard nav.
+- ⏭️ Next — master AI agent (model-switching), VPS data plane, work integrations,
+  visual polish.
 
 ### Known
-
-- The `tests/` bats suite was written for the **legacy** rofi scripts; live
-  scripts have since evolved (Zen, `simple.rasi`). It will be retired alongside
-  the rofi → eww-widget migration; not maintained against the legacy scripts.
+The top-level `tests/` bats suite targets the legacy rofi scripts and is not
+maintained against the current shell.
