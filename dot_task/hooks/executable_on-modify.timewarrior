@@ -18,4 +18,9 @@ fi
 if [ -n "$o_start" ] && [ -z "$n_start" ]; then
     timew stop :quiet 2>/dev/null || true
 fi
+
+# Refresh the quickshell drawer's task snapshot after this change settles
+# (backgrounded so taskwarrior isn't re-entered while this hook is running).
+( sleep 0.4; "$HOME/.local/bin/adhd-tasks-export.sh" ) >/dev/null 2>&1 &
+
 printf '%s\n' "$new"

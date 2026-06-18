@@ -33,8 +33,9 @@ Singleton {
     Process {
         id: proc
 
-        // /usr/bin/task: go-task shadows `task` on PATH (see eww-active.sh).
-        command: ["sh", "-c", "/usr/bin/task rc.json.array=on +PENDING export 2>/dev/null"]
+        // Read the HOST-exported snapshot (the container's taskwarrior 3.x can't
+        // read the host's 2.6.2 data; adhd-tasks-export.sh writes this JSON).
+        command: ["sh", "-c", "cat \"$HOME/.cache/adhd/tasks.json\" 2>/dev/null || echo '[]'"]
 
         stdout: StdioCollector {
             onStreamFinished: {

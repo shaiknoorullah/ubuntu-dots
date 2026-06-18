@@ -29,6 +29,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import qs.components
 import qs.services
 import Quickshell.Hyprland
@@ -49,6 +50,19 @@ PanelWindow {
     onVisibleChanged: if (visible) {
         ActiveTask.refresh();
         Focus.refresh();
+        Tasks.refresh();
+    }
+
+    // Start a focus block on a task id (or "new:<description>" to quick-add) by
+    // writing a request the HOST actuator (adhd-block.path → adhd-block-exec.sh)
+    // picks up — the in-shell replacement for the rofi launcher. The request is
+    // passed as a positional arg ($1), never interpolated, so it's injection-safe.
+    Process { id: startProc }
+    function startBlock(req: string): void {
+        startProc.command = ["sh", "-c",
+            "printf '%s' \"$1\" > \"$HOME/.cache/adhd/start-request\"", "sh", req];
+        startProc.running = true;
+        BarState.closeLeft();
     }
 
     WlrLayershell.namespace: "quickshell-leftbar"
@@ -371,6 +385,48 @@ PanelWindow {
                     Layout.topMargin: 2
                     spacing: 0
 
+                    // Quick-add: type a task + Enter → create it (+today) and start
+                    // a block, no rofi. Routed through the host actuator.
+                    StyledRect {
+                        Layout.fillWidth: true
+                        Layout.bottomMargin: 6
+                        implicitHeight: 30
+                        radius: 9
+                        color: Theme.s2
+                        border.width: 1
+                        border.color: addInput.activeFocus ? Theme.purple : Theme.bd
+
+                        TextInput {
+                            id: addInput
+                            anchors.fill: parent
+                            anchors.leftMargin: 10
+                            anchors.rightMargin: 10
+                            verticalAlignment: TextInput.AlignVCenter
+                            color: Theme.fg
+                            font.family: Theme.fontMono
+                            font.pixelSize: 12
+                            clip: true
+                            selectByMouse: true
+                            onAccepted: {
+                                const t = text.trim();
+                                if (t.length > 0) {
+                                    root.startBlock("new:" + t);
+                                    text = "";
+                                }
+                            }
+                        }
+                        StyledText {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            visible: addInput.text.length === 0 && !addInput.activeFocus
+                            text: "+ start a block — type a task, Enter"
+                            color: Theme.comment
+                            font.family: Theme.fontMono
+                            font.pixelSize: 12
+                        }
+                    }
+
                     Repeater {
                         model: Tasks.items
 
@@ -415,6 +471,13 @@ PanelWindow {
                                     font.family: Theme.fontMono
                                     font.pixelSize: 11
                                 }
+                            }
+
+                            // Click a task to open a deep-focus block on it.
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: root.startBlock(String(taskRow.modelData.id))
                             }
                         }
                     }
