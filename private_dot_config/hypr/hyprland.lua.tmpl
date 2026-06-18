@@ -47,7 +47,7 @@ hl.config({
     inactive_opacity = 0.90,
   },
   animations = {
-    enabled = true,                 -- custom beziers TODO (defaults are smooth)
+    enabled = true,                 -- curves/leaves defined below (hl.curve/hl.animation)
   },
   input = {
     kb_layout = "us",
@@ -67,6 +67,18 @@ hl.config({
     no_hardware_cursors = true,     -- avoids garbled cursor on nvidia
   },
 })
+
+-- ── Animations — fluid Dracula morphs (springy popin + smooth slides) ──
+hl.curve("smooth",  { type = "bezier", points = { {0.16, 1.0}, {0.3, 1.0} } })
+hl.curve("snappy",  { type = "bezier", points = { {0.05, 0.9}, {0.1, 1.05} } })
+hl.curve("springy", { type = "spring", mass = 1, stiffness = 190, dampening = 21 })
+
+hl.animation({ leaf = "windows",    enabled = true, speed = 6, spring = "springy", style = "popin 80%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 6, bezier = "snappy",  style = "popin 80%" })
+hl.animation({ leaf = "fade",       enabled = true, speed = 7, bezier = "smooth" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 7, bezier = "snappy",  style = "slide" })
+hl.animation({ leaf = "border",     enabled = true, speed = 8, bezier = "smooth" })
+hl.animation({ leaf = "layers",     enabled = true, speed = 6, bezier = "snappy",  style = "slide" })
 
 -- ── Window rules (workspace pinning + floats) ──────────────────────────
 hl.window_rule({ match = { class = "^(zen-alpha|zen-browser|firefox|Firefox)$" },      workspace = "2 silent" })
