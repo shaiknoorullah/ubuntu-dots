@@ -43,14 +43,17 @@ Item {
     implicitHeight: notch.height
 
     // ---- State -------------------------------------------------------------
-    property bool open: false
+    // Dynamic-Island behaviour: hover to PEEK it open, click to PIN it open.
+    // (open = hovered || pinned, so leaving collapses it unless pinned.)
+    property bool pinned: false
     property bool hovered: false
+    readonly property bool open: root.hovered || root.pinned
 
     readonly property MprisPlayer player: Players.active
     readonly property bool hasPlayer: player !== null
 
-    // Collapse the island if the player disappears while open.
-    onHasPlayerChanged: if (!hasPlayer) root.open = false
+    // Un-pin the island if the player disappears while open.
+    onHasPlayerChanged: if (!hasPlayer) root.pinned = false
 
     // ---- The carved OLED body ---------------------------------------------
     Rectangle {
@@ -110,7 +113,7 @@ Item {
             // button press is consumed there and never reaches this handler
             // (Qt does not propagate to a parent MouseArea by default) — pressing
             // play/next therefore never collapses the island.
-            onClicked: root.open = !root.open
+            onClicked: root.pinned = !root.pinned
         }
 
         // ===================================================================
