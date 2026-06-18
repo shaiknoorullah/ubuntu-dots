@@ -37,13 +37,13 @@ PanelWindow {
     WlrLayershell.namespace: "quickshell-bottombar"
     WlrLayershell.layer: WlrLayer.Top
 
-    // Pin to the bottom edge, stretch horizontally; no exclusive zone — this is
-    // an overlay strip, the mockup floats it 8px above the screen bottom.
+    // Pin to the bottom edge, stretch horizontally. Reserve the bar's height so
+    // tiled windows stop above it instead of being hidden underneath.
     anchors.bottom: true
     anchors.left: true
     anchors.right: true
     implicitHeight: 30 + bottomGap * 2
-    exclusiveZone: 0
+    exclusiveZone: 30 + bottomGap
 
     readonly property int bottomGap: 8
 
