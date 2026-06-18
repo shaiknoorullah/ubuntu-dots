@@ -16,6 +16,7 @@
 // exposes the root as the `qs` prefix). No qmldir files are needed — singletons
 // are auto-registered via their `pragma Singleton`.
 
+import QtQuick
 import Quickshell
 import qs.services
 import qs.bar            // TopBar + Island + BottomBar + LeftBar (all in bar/)

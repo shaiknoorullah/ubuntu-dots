@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Forward quickshell IPC calls into the Arch distrobox where `qs` lives.
+# e.g. qs-ipc call leftbar toggle   (summon the left "what am I chasing" bar)
+exec distrobox enter arch -- qs ipc "$@"

@@ -13,6 +13,7 @@ pragma Singleton
 // (Quickshell.Services.Pipewire) could replace this Process without touching
 // the widget — the widget only reads `Volume.vol` / `Volume.muted`.
 
+import QtQuick
 import Quickshell
 import Quickshell.Io
 

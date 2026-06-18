@@ -91,7 +91,7 @@ hl.window_rule({ match = { class = "^(zen-tab-switcher)$" },                    
 
 -- ── Layer rules: real glass on bars (compositor blur) ──────────────────
 hl.layer_rule({ match = { namespace = "waybar" },     blur = true })
-hl.layer_rule({ match = { namespace = "quickshell-.*" }, blur = true })
+hl.layer_rule({ match = { namespace = "quickshell-.*" }, blur = true, ignore_alpha = 0.1 })
 hl.layer_rule({ match = { namespace = "eww" },        blur = true })
 hl.layer_rule({ match = { namespace = "rofi" },       blur = true, ignore_alpha = 0.2 })
 
@@ -142,6 +142,7 @@ hl.bind(mod .. " + SHIFT + E", hl.dsp.exec_cmd(rofi .. "/rofi-power.sh"))
 hl.bind(mod .. " + SHIFT + A",      hl.dsp.exec_cmd("~/.local/bin/adhd-capture.sh"))
 hl.bind(mod .. " + SHIFT + X",      hl.dsp.exec_cmd("~/.local/bin/adhd-focus.sh status"))
 hl.bind(mod .. " + SHIFT + Return", hl.dsp.exec_cmd("~/.local/bin/adhd-start.sh"))
+hl.bind(mod .. " + A",              hl.dsp.exec_cmd("~/.local/bin/qs-ipc call leftbar toggle"))  -- summon left "chasing" bar
 
 -- Media keys (locked = work on lockscreen; repeating = hold to repeat)
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("pactl set-sink-volume @DEFAULT_SINK@ +5%"), { repeating = true })

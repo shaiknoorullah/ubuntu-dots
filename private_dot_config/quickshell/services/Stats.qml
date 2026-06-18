@@ -14,6 +14,7 @@ pragma Singleton
 //
 // Polled every 30 s — these move slowly and there is no urgency to them.
 
+import QtQuick
 import Quickshell
 import Quickshell.Io
 

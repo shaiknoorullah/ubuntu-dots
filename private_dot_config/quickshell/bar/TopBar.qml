@@ -38,6 +38,8 @@ import Quickshell
 import Quickshell.Wayland
 import qs.components
 import qs.services
+import Quickshell.Hyprland
+import Quickshell.Services.Notifications
 
 PanelWindow {
     id: root

@@ -12,6 +12,7 @@ import QtQuick.Layouts
 import "components"
 import qs.components
 import qs.services
+import Quickshell
 
 Item {
     id: root

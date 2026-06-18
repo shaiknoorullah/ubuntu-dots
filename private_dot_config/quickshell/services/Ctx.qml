@@ -11,6 +11,7 @@ pragma Singleton
 // Poll cadence: context changes rarely (on adhd-start/adhd-capture), so 5 s is
 // plenty; a future deflisten on the ctx file could replace the Timer.
 
+import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.services

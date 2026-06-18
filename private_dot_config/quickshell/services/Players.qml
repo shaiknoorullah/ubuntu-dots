@@ -14,6 +14,7 @@ pragma Singleton
 // (see Details widget in PATTERN_GUIDE.md section 6).
 
 import QtQml
+import QtQuick
 import Quickshell
 import Quickshell.Services.Mpris
 

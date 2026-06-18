@@ -97,20 +97,20 @@ PanelWindow {
                 text: ` ${Project.name}`
                 color: Ctx.accent
                 font.family: Theme.fontMono
-                font.pixelSize: 11.5
+                font.pixelSize: 12
                 font.bold: true
             }
             StyledText {
                 text: `⎇ ${Project.branch}`
                 color: Theme.green
                 font.family: Theme.fontMono
-                font.pixelSize: 11.5
+                font.pixelSize: 12
             }
             StyledText {
                 text: `${Ctx.ctx} · ${Project.region}`
                 color: Theme.comment
                 font.family: Theme.fontMono
-                font.pixelSize: 11.5
+                font.pixelSize: 12
             }
         }
 
@@ -125,13 +125,13 @@ PanelWindow {
                 text: "⏱ active"
                 color: Theme.comment
                 font.family: Theme.fontMono
-                font.pixelSize: 11.5
+                font.pixelSize: 12
             }
             StyledText {
                 text: ActiveTask.task
                 color: Theme.fg
                 font.family: Theme.fontMono
-                font.pixelSize: 11.5
+                font.pixelSize: 12
                 elide: Text.ElideRight
                 Layout.maximumWidth: 420
             }
@@ -139,7 +139,7 @@ PanelWindow {
                 text: ActiveTask.elapsed
                 color: Theme.cyan
                 font.family: Theme.fontMono
-                font.pixelSize: 11.5
+                font.pixelSize: 12
                 font.bold: true
                 visible: ActiveTask.active
             }
@@ -167,7 +167,7 @@ PanelWindow {
                     text: `focus ${Stats.focusScore}`
                     color: Theme.fg
                     font.family: Theme.fontMono
-                    font.pixelSize: 11.5
+                    font.pixelSize: 12
                 }
             }
 
@@ -176,7 +176,7 @@ PanelWindow {
                 text: `🔥 ${Stats.streak}-day`
                 color: Theme.comment
                 font.family: Theme.fontMono
-                font.pixelSize: 11.5
+                font.pixelSize: 12
             }
 
             // pips — a tiny 4-pip rhythm strip (filled up to streak%4-ish).
@@ -202,7 +202,7 @@ PanelWindow {
                 text: `☕ ${Stats.coffee} · 󰖃 ${Stats.walks} walks`
                 color: Theme.comment
                 font.family: Theme.fontMono
-                font.pixelSize: 11.5
+                font.pixelSize: 12
             }
 
             // encouragement — warm, never scolding (script guarantees this)
@@ -210,7 +210,7 @@ PanelWindow {
                 text: Stats.encourage
                 color: Theme.yellow
                 font.family: Theme.fontMono
-                font.pixelSize: 11.5
+                font.pixelSize: 12
                 font.bold: true
             }
         }

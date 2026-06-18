@@ -31,6 +31,7 @@ import Quickshell
 import Quickshell.Wayland
 import qs.components
 import qs.services
+import Quickshell.Hyprland
 
 PanelWindow {
     id: root
@@ -39,6 +40,9 @@ PanelWindow {
 
     screen: modelData
     color: "transparent"
+
+    // Summoned drawer: no surface at all unless opened (else it covers windows).
+    visible: BarState.leftOpen
 
     WlrLayershell.namespace: "quickshell-leftbar"
     // Above normal windows so it reads as an overlay drawer.
@@ -143,7 +147,7 @@ PanelWindow {
                         text: "one block · one outcome"
                         color: Theme.comment
                         font.family: Theme.fontMono
-                        font.pixelSize: 10.5
+                        font.pixelSize: 10
                     }
                 }
 
@@ -153,7 +157,7 @@ PanelWindow {
                         text: Time.format("ddd · h:mm")
                         color: Theme.comment
                         font.family: Theme.fontMono
-                        font.pixelSize: 10.5
+                        font.pixelSize: 10
                         horizontalAlignment: Text.AlignRight
                         Layout.alignment: Qt.AlignRight
                     }
@@ -163,7 +167,7 @@ PanelWindow {
                             : ""
                         color: Theme.comment
                         font.family: Theme.fontMono
-                        font.pixelSize: 10.5
+                        font.pixelSize: 10
                         horizontalAlignment: Text.AlignRight
                         Layout.alignment: Qt.AlignRight
                     }
@@ -247,7 +251,7 @@ PanelWindow {
                             anchors.centerIn: parent
                             text: chip.modelData.display
                             font.family: Theme.fontMono
-                            font.pixelSize: 10.5
+                            font.pixelSize: 10
                             font.bold: chip.modelData.state === "next"
                             color: chip.modelData.state === "done"
                                 ? Theme.green
@@ -263,7 +267,7 @@ PanelWindow {
                     text: "prayer times loading…"
                     color: Theme.comment
                     font.family: Theme.fontMono
-                    font.pixelSize: 10.5
+                    font.pixelSize: 10
                 }
             }
 
@@ -342,7 +346,7 @@ PanelWindow {
                                 anchors.centerIn: parent
                                 text: parent.modelData.label
                                 font.family: Theme.fontMono
-                                font.pixelSize: 10.5
+                                font.pixelSize: 10
                                 font.bold: parent.modelData.on
                                 color: parent.modelData.on ? Theme.cyan : Theme.comment
                             }
@@ -385,14 +389,14 @@ PanelWindow {
                                     color: taskRow.modelData.active
                                         ? Theme.purple : Theme.comment
                                     font.family: Theme.fontMono
-                                    font.pixelSize: 12.5
+                                    font.pixelSize: 12
                                 }
                                 StyledText {
                                     Layout.fillWidth: true
                                     text: taskRow.modelData.description
                                     color: taskRow.modelData.active ? Theme.fg : Theme.subtext0
                                     font.family: Theme.fontMono
-                                    font.pixelSize: 12.5
+                                    font.pixelSize: 12
                                     font.bold: taskRow.modelData.active
                                     elide: Text.ElideRight
                                 }
@@ -413,7 +417,7 @@ PanelWindow {
                         text: "no pending tasks — clear runway"
                         color: Theme.comment
                         font.family: Theme.fontMono
-                        font.pixelSize: 11.5
+                        font.pixelSize: 12
                     }
                 }
             }

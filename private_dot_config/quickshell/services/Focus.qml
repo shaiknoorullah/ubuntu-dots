@@ -19,6 +19,7 @@ pragma Singleton
 // The precise live elapsed (HH:MM:SS) comes from ActiveTask.elapsed; this
 // service supplies the salah runway + the idle/running state.
 
+import QtQuick
 import Quickshell
 import Quickshell.Io
 

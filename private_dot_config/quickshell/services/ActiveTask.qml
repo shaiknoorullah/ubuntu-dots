@@ -8,6 +8,7 @@ pragma Singleton
 // Polled every 1 s so the elapsed clock in the bottom + left bars ticks live
 // (timewarrior owns the true duration; we just re-read it).
 
+import QtQuick
 import Quickshell
 import Quickshell.Io
 
