@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Launch quickshell from the Arch distrobox, forwarding the host's Hyprland +
+# Wayland env so the bars render as layer-shell surfaces on the host compositor.
+# Called from hyprland.lua autostart (replaces interim waybar).
+exec distrobox enter arch -- env \
+  HYPRLAND_INSTANCE_SIGNATURE="$HYPRLAND_INSTANCE_SIGNATURE" \
+  WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}" \
+  XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" \
+  quickshell -p "$HOME/.config/quickshell/shell.qml"

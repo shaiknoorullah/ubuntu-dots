@@ -91,13 +91,13 @@ hl.window_rule({ match = { class = "^(zen-tab-switcher)$" },                    
 
 -- ── Layer rules: real glass on bars (compositor blur) ──────────────────
 hl.layer_rule({ match = { namespace = "waybar" },     blur = true })
-hl.layer_rule({ match = { namespace = "quickshell" }, blur = true })
+hl.layer_rule({ match = { namespace = "quickshell-.*" }, blur = true })
 hl.layer_rule({ match = { namespace = "eww" },        blur = true })
 hl.layer_rule({ match = { namespace = "rofi" },       blur = true, ignore_alpha = 0.2 })
 
 -- ── Autostart ──────────────────────────────────────────────────────────
 hl.on("hyprland.start", function()
-  hl.exec_cmd("waybar")                                       -- interim bar (quickshell later)
+  hl.exec_cmd("~/.local/bin/quickshell-launch")               -- 3-bar shell (quickshell via distrobox/Arch)
   hl.exec_cmd("swww-daemon; sleep 1; swww img ~/walls/space-nebula/*.jpg")
   hl.exec_cmd("dunst")
   hl.exec_cmd("nm-applet --indicator")
