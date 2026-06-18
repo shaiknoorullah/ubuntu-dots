@@ -62,7 +62,7 @@ StyledRect {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: Hypr.dispatch(`workspace ${dot.ws}`)
+                    onClicked: Hypr.dispatch(`hl.dsp.focus({ workspace = ${dot.ws} })`)
                 }
             }
         }

@@ -114,7 +114,7 @@ RowLayout {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
-                onClicked: Hypr.dispatch(`workspace ${chip.ws}`)
+                onClicked: Hypr.dispatch(`hl.dsp.focus({ workspace = ${chip.ws} })`)
             }
         }
     }
