@@ -50,4 +50,32 @@ Singleton {
             root.closeLeft();
         }
     }
+
+    // The dedicated centered "start a block" command palette (FocusPalette.qml),
+    // summoned by $mod+Shift+Return → `qs ipc call palette open`.
+    property bool paletteOpen: false
+
+    function togglePalette(): void {
+        root.paletteOpen = !root.paletteOpen;
+    }
+    function openPalette(): void {
+        root.paletteOpen = true;
+    }
+    function closePalette(): void {
+        root.paletteOpen = false;
+    }
+
+    IpcHandler {
+        target: "palette"
+
+        function toggle(): void {
+            root.togglePalette();
+        }
+        function open(): void {
+            root.openPalette();
+        }
+        function close(): void {
+            root.closePalette();
+        }
+    }
 }

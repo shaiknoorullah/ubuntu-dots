@@ -48,4 +48,10 @@ ShellRoot {
         model: Screens.screens
         LeftBar {}
     }
+
+    // Centered "start a block" command palette (qs ipc call palette open).
+    Variants {
+        model: Screens.screens
+        FocusPalette {}
+    }
 }
