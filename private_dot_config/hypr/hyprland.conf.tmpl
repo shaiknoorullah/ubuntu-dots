@@ -95,6 +95,17 @@ windowrule = float, class:^([Pp]avucontrol|[Nn]m-connection-editor|file-roller)$
 windowrule = float, class:^(zen-tab-switcher)$
 windowrule = center 1, class:^(zen-tab-switcher)$
 
+# ── Layer rules: real glass on bars (compositor blur — the thing i3/picom lacked) ──
+# Any bar surface gets Hyprland's blur applied to its transparent regions.
+layerrule = blur, eww
+layerrule = ignorezero, eww
+layerrule = blur, waybar
+layerrule = ignorezero, waybar
+layerrule = blur, quickshell
+layerrule = ignorezero, quickshell
+layerrule = blur, rofi
+layerrule = ignorezero, rofi
+
 # ═══════════════════════════════════════════════════════════════════════
 #  KEYBINDINGS (ported from i3)
 # ═══════════════════════════════════════════════════════════════════════
