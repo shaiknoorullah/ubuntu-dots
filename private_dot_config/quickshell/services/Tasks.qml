@@ -1,20 +1,19 @@
 pragma Singleton
 
-// TASKS SINGLETON — "now · next" task list for the LEFT bar
-// (pattern: caelestia Process + Timer poll, see services/Weather.qml)
+// TASKS SINGLETON — the panel's read model, from the HOST-exported snapshots
+// (the container's taskwarrior 3.x can't read the host's 2.6.2 data, so
+// adhd-tasks-export.sh writes JSON the host side and we just `cat` it).
 //
-// Taskwarrior exports the active + a few next pending tasks as JSON. We invoke
-// the real `task` binary (go-task shadows `task`, hence /usr/bin/task, matching
-// eww-active.sh's TASK_BIN convention). Output is taskwarrior's native JSON
-// array; we map it to { description, active, project, urgency }.
+//   tasks.json  -> all PENDING tasks, full fields (id, description, project,
+//                  tags[], priority, due, scheduled, urgency, annotations[], start?)
+//   done.json   -> recently completed (for Reports)
 //
-//   task rc.json.array=on +PENDING export   ->  [ {id,description,start?,project,urgency,...}, ... ]
-//
-// A task is "active" when it has a `start` attribute (timewarrior/`task start`
-// set it). We sort active-first then by urgency, cap to a handful for the bar.
-//
-// Polled every 5 s — the left bar is summoned, not always visible, and tasks
-// change on human timescales.
+// Exposes:
+//   all       — full pending task objects (active-first, then urgency desc)
+//   items     — left-bar subset { id, description, active, project, urgency } capped
+//   done      — completed task objects
+//   projects  — [{ name, count }]  derived
+//   tags      — [{ name, count }]  derived
 
 import QtQuick
 import Quickshell
@@ -23,39 +22,74 @@ import Quickshell.Io
 Singleton {
     id: root
 
-    // list of { description, active, project, urgency }
+    property var all: []
     property var items: []
+    property var done: []
+
+    readonly property var projects: root._group(root.all, t => t.project)
+    readonly property var tags: {
+        const counts = ({});
+        for (const t of root.all)
+            for (const tag of (t.tags || []))
+                counts[tag] = (counts[tag] || 0) + 1;
+        return Object.keys(counts).map(k => ({ name: k, count: counts[k] }))
+            .sort((a, b) => b.count - a.count);
+    }
+
+    function _group(arr: var, keyFn: var): var {
+        const counts = ({});
+        for (const t of arr) {
+            const k = keyFn(t);
+            if (k)
+                counts[k] = (counts[k] || 0) + 1;
+        }
+        return Object.keys(counts).map(k => ({ name: k, count: counts[k] }))
+            .sort((a, b) => b.count - a.count);
+    }
 
     function refresh(): void {
-        proc.running = true;
+        pendingProc.running = true;
+        doneProc.running = true;
     }
 
     Process {
-        id: proc
-
-        // Read the HOST-exported snapshot (the container's taskwarrior 3.x can't
-        // read the host's 2.6.2 data; adhd-tasks-export.sh writes this JSON).
+        id: pendingProc
         command: ["sh", "-c", "cat \"$HOME/.cache/adhd/tasks.json\" 2>/dev/null || echo '[]'"]
-
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
                     const arr = JSON.parse(text.trim() || "[]");
-                    const mapped = arr.map(t => ({
+                    arr.sort((a, b) => {
+                        const aa = a.start != null, ba = b.start != null;
+                        if (aa !== ba)
+                            return aa ? -1 : 1;
+                        return (b.urgency || 0) - (a.urgency || 0);
+                    });
+                    root.all = arr;
+                    root.items = arr.map(t => ({
+                        id: t.id,
                         description: t.description ?? "",
-                        active: t.start !== undefined && t.start !== null,
+                        active: t.start != null,
                         project: t.project ?? "",
                         urgency: t.urgency ?? 0
-                    }));
-                    // active first, then by descending urgency
-                    mapped.sort((a, b) => {
-                        if (a.active !== b.active)
-                            return a.active ? -1 : 1;
-                        return b.urgency - a.urgency;
-                    });
-                    root.items = mapped.slice(0, 6);
+                    })).slice(0, 6);
                 } catch (e) {
+                    root.all = [];
                     root.items = [];
+                }
+            }
+        }
+    }
+
+    Process {
+        id: doneProc
+        command: ["sh", "-c", "cat \"$HOME/.cache/adhd/done.json\" 2>/dev/null || echo '[]'"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    root.done = JSON.parse(text.trim() || "[]");
+                } catch (e) {
+                    root.done = [];
                 }
             }
         }

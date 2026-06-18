@@ -49,9 +49,9 @@ ShellRoot {
         LeftBar {}
     }
 
-    // Centered "start a block" command palette (qs ipc call palette open).
+    // Multi-page focus/task control panel (qs ipc call palette open).
     Variants {
         model: Screens.screens
-        FocusPalette {}
+        FocusPanel {}
     }
 }
