@@ -17,10 +17,10 @@ STATE="$HOME/.cache/focus"
 
 # next_prayer — first prayer in the config whose time is after now; else Fajr tmrw.
 next_prayer() {
-    local now n t
+    local now n t rest
     now=$(date +%H%M)
     if [ -f "$CONF" ]; then
-        while read -r n t; do
+        while read -r n t rest; do
             case "$n" in ''|'#'*) continue ;; esac
             [ -z "$t" ] && continue
             if [ "${t/:/}" -gt "$now" ] 2>/dev/null; then
