@@ -1,0 +1,207 @@
+# ───────────────────────────────────────────────────────────────────────
+#  Hyprland — ported from i3 (84 keybinds preserved), Dracula, JetBrainsMono.
+#  Colors templated from .chezmoidata.yaml. https://wiki.hyprland.org/
+# ───────────────────────────────────────────────────────────────────────
+
+source = ~/.config/hypr/monitors.conf
+source = ~/.config/hypr/nvidia.conf
+
+# ── Variables ──────────────────────────────────────────────────────────
+$mod        = SUPER
+$terminal   = kitty
+$browser    = zen-browser
+$editor     = code
+$rofi       = $HOME/.config/rofi/scripts
+$rofi_theme = $HOME/.config/rofi/themes/clipboard.rasi
+
+# ── Autostart ──────────────────────────────────────────────────────────
+exec-once = waybar                                  # interim bar (quickshell later)
+exec-once = swww-daemon && sleep 1 && swww img ~/walls/space-nebula/*.jpg
+exec-once = dunst
+exec-once = nm-applet --indicator
+exec-once = systemctl --user start hyprpolkitagent.service
+exec-once = wl-paste --type text  --watch cliphist store
+exec-once = wl-paste --type image --watch cliphist store
+exec-once = greenclip daemon                        # (X clip via XWayland; harmless)
+# our ADHD engine is systemd/CLI — already running; prayer timer is user-systemd.
+
+# pinned apps (silent = no focus steal)
+exec-once = [workspace 1 silent] kitty
+exec-once = [workspace 2 silent] zen-browser
+exec-once = [workspace 3 silent] code
+
+# ── Appearance — Dracula, glass ON ─────────────────────────────────────
+general {
+    gaps_in             = 6
+    gaps_out            = 3
+    border_size         = 2
+    col.active_border   = rgb({{ .dracula.purple }}) rgb({{ .dracula.pink }}) 45deg
+    col.inactive_border = rgb({{ .dracula.surface0 }})
+    layout              = dwindle
+    resize_on_border    = true
+    allow_tearing       = false
+}
+
+decoration {
+    rounding = 12
+    blur {
+        enabled     = true
+        size        = 8
+        passes      = 2
+        new_optimizations = true
+        ignore_opacity = true
+    }
+    shadow {
+        enabled = true
+        range   = 14
+        color   = rgba(0,0,0,0.45)
+    }
+    active_opacity   = 0.97
+    inactive_opacity = 0.90
+}
+
+animations {
+    enabled = true
+    bezier = smooth, 0.05, 0.9, 0.1, 1.0
+    animation = windows,    1, 4, smooth, slide
+    animation = windowsOut, 1, 3, smooth, slide
+    animation = fade,       1, 5, smooth
+    animation = workspaces, 1, 5, smooth, slide
+}
+
+input {
+    kb_layout     = us
+    follow_mouse  = 1
+    accel_profile = flat
+    touchpad { natural_scroll = no }
+}
+
+misc {
+    disable_hyprland_logo    = true
+    disable_splash_rendering = true
+    vfr                      = true
+    focus_on_activate        = false
+}
+
+dwindle { pseudotile = true; preserve_split = true; force_split = 2 }
+
+# ── Window rules (workspace pinning + floats) ──────────────────────────
+windowrule = workspace 2 silent, class:^(zen-alpha|zen-browser|firefox|Firefox)$
+windowrule = workspace 3 silent, class:^([Cc]ode|code-oss|Cursor)$
+windowrule = workspace 4 silent, class:^([Ss]lack)$
+windowrule = workspace 7 silent, class:^([Oo]bsidian)$
+windowrule = workspace 8 silent, class:^([Ss]potify|YoutubeMusic|youtube-music)$
+windowrule = float, class:^([Pp]avucontrol|[Nn]m-connection-editor|file-roller)$
+windowrule = float, class:^(zen-tab-switcher)$
+windowrule = center 1, class:^(zen-tab-switcher)$
+
+# ═══════════════════════════════════════════════════════════════════════
+#  KEYBINDINGS (ported from i3)
+# ═══════════════════════════════════════════════════════════════════════
+bind = $mod, Return, exec, $terminal
+bind = $mod SHIFT, q, killactive,
+bind = ALT, F4, killactive,
+
+# Rofi menus (run under XWayland)
+bind = $mod, SPACE, exec, $rofi/rofilaunch.sh d
+bind = $mod, Tab, exec, $rofi/rofilaunch.sh w
+bind = $mod SHIFT, s, exec, $rofi/rofilaunch.sh --run
+bind = $mod SHIFT, f, exec, $rofi/rofilaunch.sh f
+bind = $mod SHIFT, d, exec, $rofi/rofi-style-selector.sh
+bind = $mod, c, exec, $rofi/rofi-clipboard.sh
+bind = $mod SHIFT, b, exec, $rofi/rofi-bluetooth.sh
+bind = $mod SHIFT, w, exec, $rofi/rofi-wallpaper.sh
+bind = , Print, exec, $rofi/rofi-screenshot.sh
+bind = $mod CTRL, s, exec, $rofi/rofi-systemd.sh
+bind = $mod, slash, exec, $rofi/rofi-websearch-v2.sh
+bind = $mod, p, exec, $rofi/rofi-projects.sh
+bind = $mod, g, exec, $rofi/rofi-git-profile.sh
+bind = $mod, t, exec, $rofi/rofi-tmux.sh
+bind = $mod SHIFT, o, exec, $rofi/rofi-bookmarks.sh
+bind = $mod, n, exec, $rofi/rofi-obsidian.sh
+bind = $mod SHIFT, n, exec, $rofi/rofi-obsidian-search.sh
+bind = $mod, m, exec, $rofi/rofi-media.sh
+bind = $mod SHIFT, e, exec, $rofi/rofi-power.sh
+
+# ── ADHD engine (Phase 1) ──────────────────────────────────────────────
+bind = $mod SHIFT, a, exec, ~/.local/bin/adhd-capture.sh
+bind = $mod SHIFT, x, exec, ~/.local/bin/adhd-focus.sh status
+bind = $mod SHIFT, Return, exec, ~/.local/bin/adhd-start.sh
+
+# Media keys
+bindel = , XF86AudioRaiseVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindel = , XF86AudioLowerVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ -5%
+bind = , XF86AudioMute, exec, pactl set-sink-mute @DEFAULT_SINK@ toggle
+bind = , XF86AudioMicMute, exec, pactl set-source-mute @DEFAULT_SOURCE@ toggle
+bind = , XF86AudioPlay, exec, playerctl play-pause
+bind = , XF86AudioNext, exec, playerctl next
+bind = , XF86AudioPrev, exec, playerctl previous
+
+bind = $mod, Escape, exec, hyprlock
+
+# Focus (vim + arrows)
+bind = $mod, h, movefocus, l
+bind = $mod, j, movefocus, d
+bind = $mod, k, movefocus, u
+bind = $mod, l, movefocus, r
+bind = $mod, Left, movefocus, l
+bind = $mod, Down, movefocus, d
+bind = $mod, Up, movefocus, u
+bind = $mod, Right, movefocus, r
+# Move window
+bind = $mod SHIFT, h, movewindow, l
+bind = $mod SHIFT, j, movewindow, d
+bind = $mod SHIFT, k, movewindow, u
+bind = $mod SHIFT, l, movewindow, r
+
+# Layout
+bind = $mod, b, layoutmsg, preselect r
+bind = $mod, v, layoutmsg, preselect d
+bind = $mod, f, fullscreen, 0
+bind = $mod, e, togglesplit,
+bind = $mod SHIFT, space, togglefloating,
+bind = $mod, s, togglegroup,
+bind = $mod CTRL, h, changegroupactive, b
+bind = $mod CTRL, l, changegroupactive, f
+
+# Workspaces 1–10
+bind = $mod, 1, workspace, 1
+bind = $mod, 2, workspace, 2
+bind = $mod, 3, workspace, 3
+bind = $mod, 4, workspace, 4
+bind = $mod, 5, workspace, 5
+bind = $mod, 6, workspace, 6
+bind = $mod, 7, workspace, 7
+bind = $mod, 8, workspace, 8
+bind = $mod, 9, workspace, 9
+bind = $mod, 0, workspace, 10
+bind = $mod SHIFT, 1, movetoworkspace, 1
+bind = $mod SHIFT, 2, movetoworkspace, 2
+bind = $mod SHIFT, 3, movetoworkspace, 3
+bind = $mod SHIFT, 4, movetoworkspace, 4
+bind = $mod SHIFT, 5, movetoworkspace, 5
+bind = $mod SHIFT, 6, movetoworkspace, 6
+bind = $mod SHIFT, 7, movetoworkspace, 7
+bind = $mod SHIFT, 8, movetoworkspace, 8
+bind = $mod SHIFT, 9, movetoworkspace, 9
+bind = $mod SHIFT, 0, movetoworkspace, 10
+bind = $mod, mouse_down, workspace, e+1
+bind = $mod, mouse_up, workspace, e-1
+bindm = $mod, mouse:272, movewindow
+bindm = $mod, mouse:273, resizewindow
+
+# System
+bind = $mod SHIFT, c, exec, hyprctl reload
+bind = $mod SHIFT, r, exec, hyprctl reload
+bind = $mod, Delete, exit,
+
+# Resize submap
+bind = $mod, r, submap, resize
+submap = resize
+binde = , h, resizeactive, -20 0
+binde = , j, resizeactive, 0 20
+binde = , k, resizeactive, 0 -20
+binde = , l, resizeactive, 20 0
+bind = , Return, submap, reset
+bind = , Escape, submap, reset
+submap = reset
