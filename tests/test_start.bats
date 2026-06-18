@@ -7,7 +7,7 @@ setup() {
     export TASK_BIN=task
 
     # The start script under test (chezmoi source path).
-    START_SCRIPT="$TESTS_DIR/../dot_local/bin/executable_adhd-start.sh"
+    START_SCRIPT="$TESTS_DIR/../private_dot_local/bin/executable_adhd-start.sh"
     export START_SCRIPT
 
     # Drop a mock adhd-focus.sh into the injected mocks dir so the start

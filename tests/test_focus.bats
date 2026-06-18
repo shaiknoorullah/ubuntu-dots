@@ -4,7 +4,7 @@ setup() {
     load 'test_helper/common'
     common_setup
     export TASK_BIN=task
-    FOCUS_SH="$BATS_TEST_DIRNAME/../dot_local/bin/executable_adhd-focus.sh"
+    FOCUS_SH="$BATS_TEST_DIRNAME/../private_dot_local/bin/executable_adhd-focus.sh"
     mkdir -p "$HOME/.config/adhd" "$HOME/.cache"
 }
 

@@ -11,7 +11,7 @@ teardown() {
 }
 
 # Script lives in the chezmoi source (not deployed), so invoke it by SOURCE path.
-CAPTURE_SCRIPT="$BATS_TEST_DIRNAME/../dot_local/bin/executable_adhd-capture.sh"
+CAPTURE_SCRIPT="$BATS_TEST_DIRNAME/../private_dot_local/bin/executable_adhd-capture.sh"
 
 # ── Capture to Obsidian REST inbox ────────────────────────────
 
