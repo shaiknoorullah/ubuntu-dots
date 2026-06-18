@@ -5,6 +5,7 @@ pragma Singleton
 // selected task to the Detail page.
 
 import Quickshell
+import Quickshell.Io
 
 Singleton {
     id: root
@@ -15,17 +16,31 @@ Singleton {
     // The task the Detail page edits (taskwarrior id).
     property int selectedTaskId: -1
 
+    // Keyboard selection index within the current list page (driven by the
+    // FocusPanel key router; list pages render this as the highlighted row).
+    property int sel: 0
+
     // Tasks-page filters.
     property string filterProject: ""           // "" = all
     property string filterTag: ""               // "" = all
     property string filterStatus: "pending"     // pending | today | overdue | all
 
+    readonly property var order: ["focus", "tasks", "projects", "tags", "reports"]
+
     function go(p: string): void {
         root.page = p;
+        root.sel = 0;
+    }
+    function cycle(dir: int): void {
+        let i = root.order.indexOf(root.page);
+        if (i < 0)
+            i = 0;
+        root.go(root.order[(i + dir + root.order.length) % root.order.length]);
     }
     function openDetail(id: int): void {
         root.selectedTaskId = id;
         root.page = "detail";
+        root.sel = 0;
     }
     function reset(): void {
         root.page = "focus";
@@ -33,5 +48,18 @@ Singleton {
         root.filterProject = "";
         root.filterTag = "";
         root.filterStatus = "pending";
+    }
+
+    // IPC: open the panel directly on a page (direct-page keybinds + testing).
+    // No-arg functions only — this quickshell's `qs ipc call` can't pass args.
+    //   qs ipc call panel tasks   ·   qs ipc call panel reports
+    IpcHandler {
+        target: "panel"
+
+        function focus(): void    { root.go("focus");    BarState.openPalette(); }
+        function tasks(): void    { root.go("tasks");    BarState.openPalette(); }
+        function projects(): void { root.go("projects"); BarState.openPalette(); }
+        function tags(): void     { root.go("tags");     BarState.openPalette(); }
+        function reports(): void  { root.go("reports");  BarState.openPalette(); }
     }
 }

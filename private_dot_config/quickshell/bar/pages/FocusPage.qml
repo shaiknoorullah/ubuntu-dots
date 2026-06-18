@@ -85,6 +85,8 @@ Item {
                     Keys.onReturnPressed: page.activate()
                     Keys.onEnterPressed: page.activate()
                     Keys.onEscapePressed: BarState.closePalette()
+                    Keys.onTabPressed: PanelState.cycle(1)
+                    Keys.onBacktabPressed: PanelState.cycle(-1)
                 }
                 StyledText {
                     anchors.verticalCenter: parent.verticalCenter

@@ -53,8 +53,21 @@ PanelWindow {
     onVisibleChanged: if (visible) {
         Tasks.refresh();
         Focus.refresh();
-        PanelState.go("focus");
-        card.forceActiveFocus();
+        // NOTE: don't force a page here — the opening IPC (panel.focus/tasks/…)
+        // already set it; overriding would ignore direct-page opens.
+        Qt.callLater(root.focusActive);
+    }
+
+    // Input pages (focus/detail) keep focus on their own TextInput; list pages
+    // route keyboard to the panel card so ↑↓/j-k/⏎ drive the selection.
+    function focusActive(): void {
+        if (PanelState.page !== "focus" && PanelState.page !== "detail")
+            card.forceActiveFocus();
+    }
+
+    Connections {
+        target: PanelState
+        function onPageChanged(): void { Qt.callLater(root.focusActive); }
     }
 
     // ── Dim + click-away backdrop ───────────────────────────────────────
@@ -83,7 +96,42 @@ PanelWindow {
         clip: true
 
         focus: true
-        Keys.onEscapePressed: BarState.closePalette()
+
+        // Number of selectable rows + the activate hook on the current list page.
+        readonly property var pageItem: pageLoader.item
+        readonly property int navCount: (pageItem && pageItem.navCount !== undefined) ? pageItem.navCount : 0
+
+        Keys.onPressed: event => {
+            switch (event.key) {
+            case Qt.Key_Escape:
+                if (PanelState.page === "detail")
+                    PanelState.go("tasks");
+                else
+                    BarState.closePalette();
+                event.accepted = true;
+                break;
+            case Qt.Key_Tab:
+                PanelState.cycle(1); event.accepted = true; break;
+            case Qt.Key_Backtab:
+                PanelState.cycle(-1); event.accepted = true; break;
+            case Qt.Key_Down:
+            case Qt.Key_J:
+                PanelState.sel = Math.min(card.navCount - 1, PanelState.sel + 1);
+                event.accepted = true; break;
+            case Qt.Key_Up:
+            case Qt.Key_K:
+                PanelState.sel = Math.max(0, PanelState.sel - 1);
+                event.accepted = true; break;
+            case Qt.Key_Return:
+            case Qt.Key_Enter:
+                if (card.pageItem && card.pageItem.navActivate)
+                    card.pageItem.navActivate();
+                event.accepted = true; break;
+            case Qt.Key_1: case Qt.Key_2: case Qt.Key_3: case Qt.Key_4: case Qt.Key_5:
+                PanelState.go(PanelState.order[event.key - Qt.Key_1]);
+                event.accepted = true; break;
+            }
+        }
 
         opacity: BarState.paletteOpen ? 1 : 0
         scale: BarState.paletteOpen ? 1 : 0.97
