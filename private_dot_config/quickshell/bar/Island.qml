@@ -30,6 +30,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.Mpris
+import Quickshell.Widgets
 import qs.components
 import qs.services
 
@@ -131,17 +132,12 @@ Item {
                 }
             }
 
-            // Circular gradient "art" (mockup .mini .art — 17px circle).
-            Rectangle {
+            // Circular album art (mockup .mini .art — 17px circle).
+            CoverArt {
                 Layout.preferredWidth: 17
                 Layout.preferredHeight: 17
-                radius: width / 2
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop { position: 0.0; color: Theme.purple }
-                    GradientStop { position: 0.5; color: Theme.pink }
-                    GradientStop { position: 1.0; color: Theme.orange }
-                }
+                rad: 9   // ~circle
+                source: root.player?.trackArtUrl ?? ""
             }
 
             // Live equaliser — five bars bouncing 5px..12px (mockup .mini .eq).
@@ -192,19 +188,12 @@ Item {
                 Layout.fillWidth: true
                 spacing: 13
 
-                // 56px rounded art tile (mockup .bigart).
-                Rectangle {
+                // 56px rounded album art (mockup .bigart).
+                CoverArt {
                     Layout.preferredWidth: 56
                     Layout.preferredHeight: 56
-                    radius: 13
-                    gradient: Gradient {
-                        orientation: Gradient.Horizontal
-                        GradientStop { position: 0.0; color: Theme.purple }
-                        GradientStop { position: 0.5; color: Theme.pink }
-                        GradientStop { position: 1.0; color: Theme.orange }
-                    }
-                    // Soft accent glow under the art (mockup box-shadow).
-                    layer.enabled: true
+                    rad: 13
+                    source: root.player?.trackArtUrl ?? ""
                 }
 
                 ColumnLayout {
@@ -417,6 +406,39 @@ Item {
         const m = Math.floor(s / 60);
         const r = s % 60;
         return `${m}:${r < 10 ? "0" + r : r}`;
+    }
+
+    // Rounded album-cover tile: real MPRIS art, Dracula gradient as fallback
+    // while it loads / when the player exposes none.
+    component CoverArt: ClippingRectangle {
+        id: cov
+        property url source: ""
+        property int rad: 13
+        radius: rad
+        color: "transparent"
+
+        // Gradient placeholder (shows until the real art is Ready).
+        Rectangle {
+            anchors.fill: parent
+            visible: art.status !== Image.Ready
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.0; color: Theme.purple }
+                GradientStop { position: 0.5; color: Theme.pink }
+                GradientStop { position: 1.0; color: Theme.orange }
+            }
+        }
+
+        Image {
+            id: art
+            anchors.fill: parent
+            source: cov.source
+            fillMode: Image.PreserveAspectCrop
+            cache: true
+            asynchronous: true
+            sourceSize.width: width
+            sourceSize.height: height
+        }
     }
 
     // Small inline transport-button component (glyph + hover + clicked).
