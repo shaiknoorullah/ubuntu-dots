@@ -44,6 +44,13 @@ PanelWindow {
     // Summoned drawer: no surface at all unless opened (else it covers windows).
     visible: BarState.leftOpen
 
+    // Bindings don't update while the window is hidden, so on open force the
+    // data services to re-poll → the BIG timer/task reflect the live block at once.
+    onVisibleChanged: if (visible) {
+        ActiveTask.refresh();
+        Focus.refresh();
+    }
+
     WlrLayershell.namespace: "quickshell-leftbar"
     // Above normal windows so it reads as an overlay drawer.
     WlrLayershell.layer: WlrLayer.Overlay

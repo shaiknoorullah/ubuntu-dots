@@ -9,4 +9,5 @@ exec "$HOME/.local/bin/distrobox" enter arch -- env \
   HYPRLAND_INSTANCE_SIGNATURE="$HYPRLAND_INSTANCE_SIGNATURE" \
   WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}" \
   XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" \
+  PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin" \
   quickshell -p "$HOME/.config/quickshell/shell.qml"

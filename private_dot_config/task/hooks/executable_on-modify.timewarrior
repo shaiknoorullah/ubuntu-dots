@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-# Bridge taskwarrior start/stop → timewarrior intervals, tagged by project.
-read -r old; read -r new
-get(){ printf '%s' "$1" | python3 -c "import json,sys;d=json.load(sys.stdin);print(d.get('$2',''))"; }
-o_start=$(get "$old" start); n_start=$(get "$new" start)
-proj=$(get "$new" project); desc=$(get "$new" description)
-if [ -z "$o_start" ] && [ -n "$n_start" ]; then timew start "$proj" "$desc" :quiet 2>/dev/null; fi
-if [ -n "$o_start" ] && [ -z "$n_start" ]; then timew stop :quiet 2>/dev/null; fi
-printf '%s\n' "$new"
