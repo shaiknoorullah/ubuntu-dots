@@ -49,9 +49,7 @@ ShellRoot {
         LeftBar {}
     }
 
-    // Multi-page focus/task control panel (qs ipc call palette open).
-    Variants {
-        model: Screens.screens
-        FocusPanel {}
-    }
+    // Multi-page focus/task control panel — a single floating toplevel window
+    // (Hyprland draws its border/rounding/shadow/blur). qs ipc call panel focus.
+    FocusPanel {}
 }

@@ -92,9 +92,12 @@ hl.window_rule({ match = { class = "^(zen-tab-switcher)$" },                    
 -- ── Layer rules: real glass on bars (compositor blur) ──────────────────
 hl.layer_rule({ match = { namespace = "waybar" },     blur = true })
 hl.layer_rule({ match = { namespace = "quickshell-.*" }, blur = true, ignore_alpha = 0.1 })
--- The focus panel is a full-screen translucent overlay: blur the desktop behind
--- it compositor-side and fade the whole layer in (so the app needn't fake it).
-hl.layer_rule({ match = { namespace = "quickshell-palette" }, blur = true, ignore_alpha = 0, animation = "fade" })
+
+-- The focus panel is a real floating window — float + center it; Hyprland's
+-- window border/rounding/shadow/blur (decoration{}) apply automatically.
+hl.window_rule({ match = { title = "^(focus-panel)$" }, float = true })
+hl.window_rule({ match = { title = "^(focus-panel)$" }, center = true })
+hl.window_rule({ match = { title = "^(focus-panel)$" }, size = "900 600" })
 hl.layer_rule({ match = { namespace = "eww" },        blur = true })
 hl.layer_rule({ match = { namespace = "rofi" },       blur = true, ignore_alpha = 0.2 })
 

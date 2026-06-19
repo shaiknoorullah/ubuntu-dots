@@ -1,38 +1,30 @@
 pragma ComponentBehavior: Bound
 
-// FOCUS PANEL — multi-page task control center (grew out of the command palette).
-// Full-screen dim+click-away backdrop, centered glass card with a LEFT NAV and a
-// content Loader that swaps in pages/<Page>.qml. Summoned by $mod+Shift+Return
-// (qs ipc call palette open). Esc / click-away closes.
+// FOCUS PANEL — multi-page task control center.
+// A real floating TOPLEVEL window (not a layer surface), so Hyprland draws its
+// gradient border + rounding + shadow and blurs the desktop directly behind it
+// (like any translucent window). No QML backdrop/border — that's the compositor's
+// job. Floated + centered by a windowrule (match title "focus-panel").
+// Summoned by $mod+Shift+Return (qs ipc call panel focus). Esc closes / goes back.
 //
 // Pages (PanelState.page): focus | tasks | detail | projects | tags | reports.
-// All data via Tasks (read) + TaskActions (write, host-bridged) + PanelState (nav).
 
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Wayland
 import qs.components
 import qs.services
 
-PanelWindow {
+FloatingWindow {
     id: root
 
-    required property ShellScreen modelData
-    screen: modelData
-    color: "transparent"
+    implicitWidth: 900
+    implicitHeight: 600
+    title: "focus-panel"
+    // Translucent → Hyprland frosts the desktop behind it. Tune alpha for
+    // see-through vs readability.
+    color: Theme.withAlpha(Theme.base, 0.62)
     visible: BarState.paletteOpen
-
-    WlrLayershell.namespace: "quickshell-palette"
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: BarState.paletteOpen
-        ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-
-    anchors.top: true
-    anchors.bottom: true
-    anchors.left: true
-    anchors.right: true
-    exclusiveZone: 0
 
     readonly property var pageFiles: ({
         "focus": "pages/FocusPage.qml",
@@ -53,16 +45,12 @@ PanelWindow {
     onVisibleChanged: if (visible) {
         Tasks.refresh();
         Focus.refresh();
-        // NOTE: don't force a page here — the opening IPC (panel.focus/tasks/…)
-        // already set it; overriding would ignore direct-page opens.
         Qt.callLater(root.focusActive);
     }
 
-    // Input pages (focus/detail) keep focus on their own TextInput; list pages
-    // route keyboard to the panel card so ↑↓/j-k/⏎ drive the selection.
     function focusActive(): void {
         if (PanelState.page !== "focus" && PanelState.page !== "detail")
-            card.forceActiveFocus();
+            scope.forceActiveFocus();
     }
 
     Connections {
@@ -70,36 +58,12 @@ PanelWindow {
         function onPageChanged(): void { Qt.callLater(root.focusActive); }
     }
 
-    // ── Translucent click-away backdrop ─────────────────────────────────
-    // A constant translucent tint (NO in-app fade). Hyprland blurs the desktop
-    // behind this layer and fades the whole layer in/out (layerrule), so the
-    // frosting is compositor-side and never animates with the card.
-    Rectangle {
+    // Key router lives on a FocusScope filling the window.
+    FocusScope {
+        id: scope
         anchors.fill: parent
-        color: Qt.rgba(0, 0, 0, 0.16)
-        MouseArea {
-            anchors.fill: parent
-            onClicked: BarState.closePalette()
-        }
-    }
-
-    // ── The panel card ──────────────────────────────────────────────────
-    Rectangle {
-        id: card
-
-        anchors.centerIn: parent
-        width: 900
-        height: 600
-        radius: 18
-        // More translucent so Hyprland's blur frosts through it more.
-        color: Theme.withAlpha(Theme.base, 0.55)
-        border.width: 1
-        border.color: Theme.withAlpha(Theme.fg, 0.22)   // more prominent edge
-        clip: true
-
         focus: true
 
-        // Number of selectable rows + the activate hook on the current list page.
         readonly property var pageItem: pageLoader.item
         readonly property int navCount: (pageItem && pageItem.navCount !== undefined) ? pageItem.navCount : 0
 
@@ -118,7 +82,7 @@ PanelWindow {
                 PanelState.cycle(-1); event.accepted = true; break;
             case Qt.Key_Down:
             case Qt.Key_J:
-                PanelState.sel = Math.min(card.navCount - 1, PanelState.sel + 1);
+                PanelState.sel = Math.min(scope.navCount - 1, PanelState.sel + 1);
                 event.accepted = true; break;
             case Qt.Key_Up:
             case Qt.Key_K:
@@ -126,8 +90,8 @@ PanelWindow {
                 event.accepted = true; break;
             case Qt.Key_Return:
             case Qt.Key_Enter:
-                if (card.pageItem && card.pageItem.navActivate)
-                    card.pageItem.navActivate();
+                if (scope.pageItem && scope.pageItem.navActivate)
+                    scope.pageItem.navActivate();
                 event.accepted = true; break;
             case Qt.Key_1: case Qt.Key_2: case Qt.Key_3: case Qt.Key_4: case Qt.Key_5:
                 PanelState.go(PanelState.order[event.key - Qt.Key_1]);
@@ -135,20 +99,15 @@ PanelWindow {
             }
         }
 
-        // No in-app entrance animation — Hyprland fades the whole translucent
-        // layer in/out (layerrule animation = fade), so nothing animates twice.
-
-        MouseArea { anchors.fill: parent }   // swallow clicks (don't fall to backdrop)
-
         RowLayout {
             anchors.fill: parent
             spacing: 0
 
-            // ── Left nav rail ──────────────────────────────────────────
+            // ── Left nav rail (slightly more opaque so it reads) ───────────
             Rectangle {
                 Layout.fillHeight: true
                 Layout.preferredWidth: 184
-                color: Theme.withAlpha(Theme.bg, 0.55)
+                color: Theme.withAlpha(Theme.bg, 0.4)
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -175,7 +134,7 @@ PanelWindow {
                             implicitHeight: 38
                             radius: 10
                             color: PanelState.page === navRow.modelData.id
-                                ? Theme.withAlpha(Theme.purple, 0.18) : "transparent"
+                                ? Theme.withAlpha(Theme.purple, 0.22) : "transparent"
 
                             RowLayout {
                                 anchors.fill: parent
@@ -210,7 +169,6 @@ PanelWindow {
 
                     Item { Layout.fillHeight: true }
 
-                    // context + close hint
                     StyledText {
                         text: "esc to close"
                         color: Theme.comment
@@ -222,7 +180,7 @@ PanelWindow {
 
             Rectangle { Layout.fillHeight: true; implicitWidth: 1; color: Theme.bd }
 
-            // ── Page content ───────────────────────────────────────────
+            // ── Page content ───────────────────────────────────────────────
             Loader {
                 id: pageLoader
                 Layout.fillWidth: true
