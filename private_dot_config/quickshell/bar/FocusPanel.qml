@@ -71,9 +71,11 @@ PanelWindow {
     }
 
     // ── Dim + click-away backdrop ───────────────────────────────────────
+    // Light dim only — the windows behind stay visible (the card + Hyprland's
+    // frosted blur provide the separation, not a blackout).
     Rectangle {
         anchors.fill: parent
-        color: Qt.rgba(0, 0, 0, 0.45)
+        color: Qt.rgba(0, 0, 0, 0.18)
         opacity: BarState.paletteOpen ? 1 : 0
         Behavior on opacity { NumberAnimation { duration: 140 } }
         MouseArea {
