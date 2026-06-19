@@ -206,7 +206,7 @@ Item {
             Layout.topMargin: 12
             StyledText {
                 text: "↑↓ move   ⏎ start   esc close"
-                color: Theme.comment
+                color: Theme.subtext0
                 font.family: Theme.fontMono
                 font.pixelSize: 11
             }

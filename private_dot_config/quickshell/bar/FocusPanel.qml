@@ -116,7 +116,7 @@ FloatingWindow {
 
                     StyledText {
                         text: "FOCUS PANEL"
-                        color: Theme.comment
+                        color: Theme.subtext0
                         font.family: Theme.fontMono
                         font.pixelSize: 10
                         font.bold: true
@@ -171,7 +171,7 @@ FloatingWindow {
 
                     StyledText {
                         text: "esc to close"
-                        color: Theme.comment
+                        color: Theme.subtext0
                         font.family: Theme.fontMono
                         font.pixelSize: 10
                     }
