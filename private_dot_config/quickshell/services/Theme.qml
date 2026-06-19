@@ -49,10 +49,17 @@ QtObject {
     // --glass2 / --s1 / --s2 / --bd / --hov over our base.
     readonly property color glass: root.withAlpha(root.base, 0.72)   // --glass
     readonly property color glass2: root.withAlpha(root.bg, 0.85)    // --glass2
+    readonly property color panel: root.withAlpha(root.base, 0.78)
+    readonly property color panelStrong: root.withAlpha("#0b0b14", 0.88)
+    readonly property color panelSoft: root.withAlpha(root.surface0, 0.56)
     readonly property color s1: root.withAlpha(root.fg, 0.04)        // --s1
     readonly property color s2: root.withAlpha(root.fg, 0.07)        // --s2
-    readonly property color bd: root.withAlpha(root.fg, 0.09)        // --bd  (border)
+    readonly property color bd: root.withAlpha(root.fg, 0.10)        // --bd  (border)
+    readonly property color edge: root.withAlpha(root.fg, 0.16)
     readonly property color hov: root.withAlpha(root.fg, 0.10)       // --hov
+    readonly property color shine: root.withAlpha("#ffffff", 0.075)
+    readonly property color shade: root.withAlpha("#000000", 0.22)
+    readonly property color shadow: root.withAlpha("#000000", 0.40)
 
     // ── Radii (mirror mockup --rad/--radbar/--pill/--chip) ─────────────
     readonly property int rad: 16
@@ -66,19 +73,21 @@ QtObject {
 
     // ── Top-bar + notch metrics (mockup #top / .barpill / #notch) ──────
     // Added for TopBar.qml + Island.qml. The bottom/left bars don't use these.
-    readonly property int barHeight: 84      // #top height (incl. notch travel)
-    readonly property int barTopPad: 7       // #top padding-top
-    readonly property int barSidePad: 14     // #top side padding
+    readonly property int barHeight: 232     // #top height — tall enough for open island (7 + 210 + 15 margin)
+    readonly property int barTopPad: 7       // #top padding-top (uniform inset: top == sides for every element)
+    readonly property int barSidePad: 7      // #top side padding (== barTopPad so the floating row is equidistant from every edge)
     readonly property int pillHeight: 32     // .barpill height
-    readonly property int notchW: 226        // #notch collapsed width
-    readonly property int notchH: 30         // #notch collapsed height
-    readonly property int notchHoverW: 244   // #notch:hover width
-    readonly property int notchOpenW: 396    // #notch.open width
-    readonly property int notchOpenH: 194    // #notch.open height
+    readonly property int notchW: 226        // #notch collapsed width (content-driven in Island.qml; kept as reference)
+    readonly property int notchH: 32         // #notch collapsed height (was 30; uniform with pills)
+    readonly property int notchHoverW: 244   // #notch:hover width (legacy; no longer used — hover is crossfade-only)
+    readonly property int notchOpenW: 460    // #notch.open width (was 396; wider for meta+cava+transport)
+    readonly property int notchOpenH: 210    // #notch.open height (was 194; room for the cava band)
 
     // ── Typography (mockup --mono) ─────────────────────────────────────
-    // JetBrainsMono Nerd Font carries the 󰒮 󰒭   transport glyphs.
+    // Text stays JetBrainsMono; UI icons use Material Symbols Rounded so bars,
+    // panels, and controls share one minimal icon language.
     readonly property string fontMono: "JetBrainsMono Nerd Font"
+    readonly property string fontIcon: "Material Symbols Rounded"
 
     // ── Motion (mockup --ease = cubic-bezier(.25,1,.5,1)) ──────────────
     // calm, settle-in easing — exposed as bezier control points for

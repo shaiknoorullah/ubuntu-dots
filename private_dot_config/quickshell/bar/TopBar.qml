@@ -9,6 +9,7 @@ pragma ComponentBehavior: Bound
 //   LEFT pill  (mockup .barpill, left):  context chip · workspaces · window
 //   CENTRE     (mockup #notch):          the Dynamic Island
 //   RIGHT pill (mockup .barpill, right): clock · volume · notification bell
+//                                         click → right system panel
 //
 // The window is `Theme.barHeight` (84) tall so the notch has room to morph
 // DOWN into the bar's empty space without the surface clipping it. The pills
@@ -25,8 +26,8 @@ pragma ComponentBehavior: Bound
 //   workspaces→ Hypr (native Quickshell.Hyprland)
 //   window    → Hypr.activeToplevel.title    (native)
 //   clock     → Time (native SystemClock)
-//   volume    → Volume.vol / .muted          (eww-vol.sh)
-//   notifs    → Notifs.count                 (native NotificationServer)
+//   volume    → SystemAudio.volume / .muted  (native PipeWire)
+//   notifs    → SystemNotifs.count           (dunst or native fallback)
 //   island    → Players (MPRIS) + Focus (adhd-focus.sh)
 //
 // All colour via Theme. The whole bar tints subtly to the live context accent
@@ -60,6 +61,17 @@ PanelWindow {
 
     // Reserve only the pill band; the lower (notch-morph) area is click-through.
     exclusiveZone: Theme.barTopPad + Theme.pillHeight
+
+    // Input mask — the window is 232px tall but only the three interactive
+    // shapes (left pill, right pill, island notch) receive clicks.  The rest of
+    // the transparent strip is click-through so tiled windows and titlebars
+    // remain reachable.  Nested Region children default to Intersection.Combine
+    // (union), giving us exactly the three interactive zones.
+    mask: Region {
+        Region { item: leftPill }
+        Region { item: rightPill }
+        Region { item: island }
+    }
 
     // Feed the live context into the Theme so accent-tinted tokens (a12/a18/a35,
     // ctxAccent) follow the operator's current context everywhere.
@@ -141,6 +153,9 @@ PanelWindow {
         id: island
 
         anchors.top: parent.top
+        // Same top inset as the pills so the notch floats in line with them
+        // (it morphs DOWN from here) instead of hugging the screen edge.
+        anchors.topMargin: Theme.barTopPad
         anchors.horizontalCenter: parent.horizontalCenter
     }
 
@@ -149,6 +164,10 @@ PanelWindow {
     // =======================================================================
     GlassPill {
         id: rightPill
+
+        interactive: true
+        active: BarState.quickPanelOpen
+        onClicked: BarState.toggleQuickPanel()
 
         anchors.right: parent.right
         anchors.top: parent.top
@@ -178,45 +197,43 @@ PanelWindow {
                 }
             }
 
-            // ---- Volume (mockup .tic 󰕾 62) ---------------------------------
+            // ---- Volume -----------------------------------------------------
             RowLayout {
                 spacing: 6
 
-                StyledText {
-                    // Nerd Font speaker / muted glyphs (󰖁 muted, 󰕾 high).
-                    text: Volume.muted ? "\u{F0581}" : "\u{F057E}"
+                MaterialIcon {
+                    text: SystemAudio.muted ? "volume_off" : "volume_up"
                     color: Theme.withAlpha(Theme.fg, 0.66)
-                    font.family: Theme.fontMono
-                    font.pixelSize: 13
+                    font.pixelSize: 16
+                    Layout.preferredWidth: 16
+                    Layout.alignment: Qt.AlignVCenter
                 }
 
                 StyledText {
-                    text: Volume.muted ? "muted" : `${Volume.vol}`
+                    text: SystemAudio.muted ? "muted" : `${SystemAudio.volume}`
                     color: Theme.withAlpha(Theme.fg, 0.66)
                     font.family: Theme.fontMono
                     font.pixelSize: 12
                 }
             }
 
-            // ---- Notifications (mockup .tic 󰂚 + .badge) --------------------
+            // ---- Notifications ---------------------------------------------
             Item {
-                Layout.preferredWidth: bell.implicitWidth + (Notifs.count > 0 ? 12 : 0)
+                Layout.preferredWidth: bell.implicitWidth + (SystemNotifs.count > 0 ? 12 : 0)
                 Layout.preferredHeight: 16
 
-                StyledText {
+                MaterialIcon {
                     id: bell
 
                     anchors.verticalCenter: parent.verticalCenter
-                    // Nerd Font bell (󰂚).
-                    text: "\u{F009A}"
-                    color: Theme.withAlpha(Theme.fg, 0.66)
-                    font.family: Theme.fontMono
-                    font.pixelSize: 13
+                    text: SystemNotifs.dnd ? "notifications_paused" : "notifications"
+                    color: SystemNotifs.dnd ? Theme.orange : Theme.withAlpha(Theme.fg, 0.66)
+                    font.pixelSize: 16
                 }
 
                 // Red count badge (mockup .badge), only when there are unread.
                 Rectangle {
-                    visible: Notifs.count > 0
+                    visible: SystemNotifs.count > 0
                     anchors.left: bell.right
                     anchors.leftMargin: 2
                     anchors.verticalCenter: bell.verticalCenter
@@ -230,7 +247,7 @@ PanelWindow {
                         id: badgeText
 
                         anchors.centerIn: parent
-                        text: `${Notifs.count}`
+                        text: `${SystemNotifs.count}`
                         color: Theme.base
                         font.family: Theme.fontMono
                         font.pixelSize: 9
@@ -247,26 +264,61 @@ PanelWindow {
     // A 32px-tall rounded translucent pill with a hairline border and a soft
     // drop shadow. Sizes to its content (the RowLayout placed inside it). Real
     // backdrop-blur needs a compositor blur rule on the `quickshell-topbar`
-    // layer namespace (Hyprland: `layerrule = blur, quickshell-topbar`); the
-    // translucent glass colour reads correctly with or without it.
+    // layer namespace (Hyprland 0.55+ Lua:
+    // `hl.layer_rule({ match = { namespace = "quickshell-.*" }, blur = true })`);
+    // the translucent glass colour reads correctly with or without it.
     // The single child (a RowLayout) is centred and the pill sizes to it +
     // horizontal padding. We measure the child via childrenRect so we don't
     // create a width<->fill cycle (the child must NOT anchors.fill the pill).
     component GlassPill: StyledRect {
-        default property alias content: contentItem.data
+        id: glass
 
-        implicitWidth: contentItem.childrenRect.width + 24
+        default property alias content: contentItem.data
+        property bool interactive: false
+        property bool active: false
+        property bool hovered: false
+        signal clicked
+
+        // Equal inset on every side: the horizontal extra is forced to match the
+        // vertical extra (pillHeight − contentHeight), so content sits the same
+        // distance from all four edges instead of ~12px L/R vs ~4px T/B.
+        implicitWidth: contentItem.childrenRect.width + (Theme.pillHeight - contentItem.childrenRect.height)
         implicitHeight: Theme.pillHeight
         radius: Theme.pill
-        color: Theme.glass
+        color: glass.active ? Theme.withAlpha(Theme.ctxAccent, 0.20)
+            : glass.hovered ? Theme.withAlpha(Theme.base, 0.86)
+            : Theme.panel
         border.width: 1
-        border.color: Theme.bd
+        border.color: glass.active ? Theme.withAlpha(Theme.ctxAccent, 0.44) : Theme.edge
+        clip: true
+
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            color: "transparent"
+            gradient: Gradient {
+                orientation: Gradient.Vertical
+                GradientStop { position: 0.0; color: Theme.shine }
+                GradientStop { position: 0.48; color: "transparent" }
+                GradientStop { position: 1.0; color: Theme.withAlpha(Theme.ctxAccent, 0.055) }
+            }
+        }
 
         Item {
             id: contentItem
             anchors.centerIn: parent
             implicitWidth: childrenRect.width
             implicitHeight: childrenRect.height
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            enabled: glass.interactive
+            hoverEnabled: true
+            cursorShape: glass.interactive ? Qt.PointingHandCursor : Qt.ArrowCursor
+            onEntered: glass.hovered = true
+            onExited: glass.hovered = false
+            onClicked: glass.clicked()
         }
     }
 }
