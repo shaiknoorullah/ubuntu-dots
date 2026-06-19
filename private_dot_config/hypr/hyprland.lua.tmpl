@@ -92,6 +92,9 @@ hl.window_rule({ match = { class = "^(zen-tab-switcher)$" },                    
 -- ── Layer rules: real glass on bars (compositor blur) ──────────────────
 hl.layer_rule({ match = { namespace = "waybar" },     blur = true })
 hl.layer_rule({ match = { namespace = "quickshell-.*" }, blur = true, ignore_alpha = 0.1 })
+-- The focus panel is a full-screen translucent overlay: blur the desktop behind
+-- it compositor-side and fade the whole layer in (so the app needn't fake it).
+hl.layer_rule({ match = { namespace = "quickshell-palette" }, blur = true, ignore_alpha = 0, animation = "fade" })
 hl.layer_rule({ match = { namespace = "eww" },        blur = true })
 hl.layer_rule({ match = { namespace = "rofi" },       blur = true, ignore_alpha = 0.2 })
 

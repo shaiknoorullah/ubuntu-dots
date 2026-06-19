@@ -70,14 +70,13 @@ PanelWindow {
         function onPageChanged(): void { Qt.callLater(root.focusActive); }
     }
 
-    // ── Dim + click-away backdrop ───────────────────────────────────────
-    // Light dim only — the windows behind stay visible (the card + Hyprland's
-    // frosted blur provide the separation, not a blackout).
+    // ── Translucent click-away backdrop ─────────────────────────────────
+    // A constant translucent tint (NO in-app fade). Hyprland blurs the desktop
+    // behind this layer and fades the whole layer in/out (layerrule), so the
+    // frosting is compositor-side and never animates with the card.
     Rectangle {
         anchors.fill: parent
-        color: Qt.rgba(0, 0, 0, 0.18)
-        opacity: BarState.paletteOpen ? 1 : 0
-        Behavior on opacity { NumberAnimation { duration: 140 } }
+        color: Qt.rgba(0, 0, 0, 0.32)
         MouseArea {
             anchors.fill: parent
             onClicked: BarState.closePalette()
@@ -135,10 +134,8 @@ PanelWindow {
             }
         }
 
-        opacity: BarState.paletteOpen ? 1 : 0
-        scale: BarState.paletteOpen ? 1 : 0.97
-        Behavior on opacity { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
-        Behavior on scale  { NumberAnimation { duration: 220; easing.type: Easing.OutBack } }
+        // No in-app entrance animation — Hyprland fades the whole translucent
+        // layer in/out (layerrule animation = fade), so nothing animates twice.
 
         MouseArea { anchors.fill: parent }   // swallow clicks (don't fall to backdrop)
 
