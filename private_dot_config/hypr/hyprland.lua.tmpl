@@ -31,6 +31,7 @@ hl.config({
   },
   decoration = {
     rounding = 12,
+    dim_strength = 0.6,             -- how much dim_around darkens the background
     blur = {
       enabled = true,
       size = 10,
@@ -98,6 +99,8 @@ hl.layer_rule({ match = { namespace = "quickshell-.*" }, blur = true, ignore_alp
 hl.window_rule({ match = { title = "^(focus-panel)$" }, float = true })
 hl.window_rule({ match = { title = "^(focus-panel)$" }, center = true })
 hl.window_rule({ match = { title = "^(focus-panel)$" }, size = "900 600" })
+hl.window_rule({ match = { title = "^(focus-panel)$" }, dim_around = true })    -- modal dim
+hl.window_rule({ match = { title = "^(focus-panel)$" }, stay_focused = true })  -- grab focus (keyboard + dim)
 hl.layer_rule({ match = { namespace = "eww" },        blur = true })
 hl.layer_rule({ match = { namespace = "rofi" },       blur = true, ignore_alpha = 0.2 })
 

@@ -21,9 +21,9 @@ FloatingWindow {
     implicitWidth: 900
     implicitHeight: 600
     title: "focus-panel"
-    // Translucent → Hyprland frosts the desktop behind it. Tune alpha for
-    // see-through vs readability.
-    color: Theme.withAlpha(Theme.base, 0.62)
+    // Translucent → Hyprland frosts the desktop behind it. A bit more opaque
+    // for text contrast; the dim_around windowrule darkens the background too.
+    color: Theme.withAlpha(Theme.base, 0.82)
     visible: BarState.paletteOpen
 
     readonly property var pageFiles: ({
