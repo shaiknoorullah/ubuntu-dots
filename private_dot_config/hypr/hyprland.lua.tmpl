@@ -100,6 +100,7 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("~/.local/bin/quickshell-launch")               -- 3-bar shell (quickshell via distrobox/Arch)
   hl.exec_cmd("swww-daemon; sleep 1; swww img ~/walls/space-nebula/*.jpg")
   hl.exec_cmd("dunst")
+  hl.exec_cmd("hypridle")                                     -- idle → lock/screen-off
   hl.exec_cmd("nm-applet --indicator")
   hl.exec_cmd("systemctl --user start hyprpolkitagent.service")
   hl.exec_cmd("wl-paste --type text  --watch cliphist store")
