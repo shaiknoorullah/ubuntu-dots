@@ -76,7 +76,7 @@ PanelWindow {
     // frosting is compositor-side and never animates with the card.
     Rectangle {
         anchors.fill: parent
-        color: Qt.rgba(0, 0, 0, 0.32)
+        color: Qt.rgba(0, 0, 0, 0.16)
         MouseArea {
             anchors.fill: parent
             onClicked: BarState.closePalette()
@@ -91,9 +91,10 @@ PanelWindow {
         width: 900
         height: 600
         radius: 18
-        color: Theme.glass
+        // More translucent so Hyprland's blur frosts through it more.
+        color: Theme.withAlpha(Theme.base, 0.55)
         border.width: 1
-        border.color: Theme.bd
+        border.color: Theme.withAlpha(Theme.fg, 0.22)   // more prominent edge
         clip: true
 
         focus: true
