@@ -101,13 +101,19 @@ hl.window_rule({ match = { title = "^(focus-panel)$" }, center = true })
 hl.window_rule({ match = { title = "^(focus-panel)$" }, size = "900 600" })
 hl.window_rule({ match = { title = "^(focus-panel)$" }, dim_around = true })    -- modal dim
 hl.window_rule({ match = { title = "^(focus-panel)$" }, stay_focused = true })  -- grab focus (keyboard + dim)
+
+-- Wallpaper picker widget — same floating/centered/focused treatment.
+hl.window_rule({ match = { title = "^(wallpaper-picker)$" }, float = true })
+hl.window_rule({ match = { title = "^(wallpaper-picker)$" }, center = true })
+hl.window_rule({ match = { title = "^(wallpaper-picker)$" }, size = "1000 680" })
+hl.window_rule({ match = { title = "^(wallpaper-picker)$" }, stay_focused = true })
 hl.layer_rule({ match = { namespace = "eww" },        blur = true })
 hl.layer_rule({ match = { namespace = "rofi" },       blur = true, ignore_alpha = 0.2 })
 
 -- ── Autostart ──────────────────────────────────────────────────────────
 hl.on("hyprland.start", function()
   hl.exec_cmd("~/.local/bin/quickshell-launch")               -- 3-bar shell (quickshell via distrobox/Arch)
-  hl.exec_cmd("swww-daemon; sleep 1; swww img ~/walls/space-nebula/*.jpg")
+  hl.exec_cmd("~/.local/bin/wall.sh restore")                 -- swww + restore saved wallpaper
   hl.exec_cmd("dunst")
   hl.exec_cmd("hypridle")                                     -- idle → lock/screen-off
   hl.exec_cmd("nm-applet --indicator")
@@ -135,7 +141,7 @@ hl.bind(mod .. " + SHIFT + F", hl.dsp.exec_cmd(rofi .. "/rofilaunch.sh f"))
 hl.bind(mod .. " + SHIFT + D", hl.dsp.exec_cmd(rofi .. "/rofi-style-selector.sh"))
 hl.bind(mod .. " + C",         hl.dsp.exec_cmd(rofi .. "/rofi-clipboard.sh"))
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd(rofi .. "/rofi-bluetooth.sh"))
-hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd(rofi .. "/rofi-wallpaper.sh"))
+hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("~/.local/bin/qs-ipc call wallpaper open"))  -- wallpaper widget
 hl.bind("Print",               hl.dsp.exec_cmd(rofi .. "/rofi-screenshot.sh"))
 hl.bind(mod .. " + CTRL + S",  hl.dsp.exec_cmd(rofi .. "/rofi-systemd.sh"))
 hl.bind(mod .. " + slash",     hl.dsp.exec_cmd(rofi .. "/rofi-websearch-v2.sh"))

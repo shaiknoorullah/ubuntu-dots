@@ -52,4 +52,7 @@ ShellRoot {
     // Multi-page focus/task control panel — a single floating toplevel window
     // (Hyprland draws its border/rounding/shadow/blur). qs ipc call panel focus.
     FocusPanel {}
+
+    // Wallpaper picker widget (qs ipc call wallpaper open).
+    WallpaperPicker {}
 }

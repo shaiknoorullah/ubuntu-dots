@@ -78,4 +78,20 @@ Singleton {
             root.closePalette();
         }
     }
+
+    // The quickshell wallpaper picker widget (WallpaperPicker.qml),
+    // summoned by $mod+Shift+W → `qs ipc call wallpaper open`.
+    property bool wallpaperOpen: false
+
+    function toggleWallpaper(): void { root.wallpaperOpen = !root.wallpaperOpen; }
+    function openWallpaper(): void   { root.wallpaperOpen = true; }
+    function closeWallpaper(): void  { root.wallpaperOpen = false; }
+
+    IpcHandler {
+        target: "wallpaper"
+
+        function toggle(): void { root.toggleWallpaper(); }
+        function open(): void   { root.openWallpaper(); }
+        function close(): void  { root.closeWallpaper(); }
+    }
 }
