@@ -61,11 +61,12 @@ Item {
             Layout.topMargin: 12
             spacing: 12
 
-            StyledText {
-                text: "\u{F0349}"
+            MaterialIcon {
+                text: "search"
                 color: Theme.purple
-                font.family: Theme.fontMono
-                font.pixelSize: 18
+                font.pixelSize: 20
+                Layout.preferredWidth: 20
+                Layout.alignment: Qt.AlignVCenter
             }
             Item {
                 Layout.fillWidth: true
@@ -129,11 +130,12 @@ Item {
                             anchors.leftMargin: 12
                             anchors.rightMargin: 12
                             spacing: 11
-                            StyledText {
-                                text: page.sel === row.index ? "\u{F0142}" : "\u{F0764}"
+                            MaterialIcon {
+                                text: page.sel === row.index ? "play_arrow" : "radio_button_unchecked"
                                 color: page.sel === row.index ? Theme.purple : Theme.comment
-                                font.family: Theme.fontMono
-                                font.pixelSize: 13
+                                font.pixelSize: 18
+                                Layout.preferredWidth: 18
+                                Layout.alignment: Qt.AlignVCenter
                             }
                             StyledText {
                                 Layout.fillWidth: true
@@ -171,7 +173,13 @@ Item {
                         anchors.leftMargin: 12
                         anchors.rightMargin: 12
                         spacing: 11
-                        StyledText { text: "\u{F0415}"; color: Theme.green; font.family: Theme.fontMono; font.pixelSize: 13 }
+                        MaterialIcon {
+                            text: "add_circle"
+                            color: Theme.green
+                            font.pixelSize: 18
+                            Layout.preferredWidth: 18
+                            Layout.alignment: Qt.AlignVCenter
+                        }
                         StyledText {
                             Layout.fillWidth: true
                             text: `create & start “${page.query.trim()}”`

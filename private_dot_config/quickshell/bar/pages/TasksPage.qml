@@ -284,12 +284,11 @@ Item {
                                 implicitWidth: 18
                                 implicitHeight: 18
                                 Layout.alignment: Qt.AlignVCenter
-                                StyledText {
+                                MaterialIcon {
                                     anchors.centerIn: parent
-                                    text: "\u{F0130}"  // circle outline
+                                    text: doneArea.containsMouse ? "check_circle" : "radio_button_unchecked"
                                     color: doneArea.containsMouse ? Theme.green : Theme.comment
-                                    font.family: Theme.fontMono
-                                    font.pixelSize: 16
+                                    font.pixelSize: 18
                                 }
                                 MouseArea {
                                     id: doneArea
@@ -364,12 +363,11 @@ Item {
                                     color: startArea.containsMouse ? Theme.withAlpha(Theme.purple, 0.28) : Theme.withAlpha(Theme.surface1, 0.6)
                                     border.width: 1
                                     border.color: Theme.bd
-                                    StyledText {
+                                    MaterialIcon {
                                         anchors.centerIn: parent
-                                        text: "\u{F040A}"  // play
+                                        text: "play_arrow"
                                         color: Theme.purple
-                                        font.family: Theme.fontMono
-                                        font.pixelSize: 13
+                                        font.pixelSize: 18
                                     }
                                     MouseArea {
                                         id: startArea
@@ -390,12 +388,11 @@ Item {
                                     color: delArea.containsMouse ? Theme.withAlpha(Theme.red, 0.28) : Theme.withAlpha(Theme.surface1, 0.6)
                                     border.width: 1
                                     border.color: Theme.bd
-                                    StyledText {
+                                    MaterialIcon {
                                         anchors.centerIn: parent
-                                        text: "\u{F0A7A}"  // trash
+                                        text: "delete"
                                         color: Theme.red
-                                        font.family: Theme.fontMono
-                                        font.pixelSize: 13
+                                        font.pixelSize: 17
                                     }
                                     MouseArea {
                                         id: delArea

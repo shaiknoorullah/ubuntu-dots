@@ -49,6 +49,13 @@ ShellRoot {
         LeftBar {}
     }
 
+    // One End-4-style RIGHT system panel per monitor, opened from the top-right
+    // pill or with `qs ipc call quickpanel toggle`.
+    Variants {
+        model: Screens.screens
+        RightPanel {}
+    }
+
     // Multi-page focus/task control panel — a single floating toplevel window
     // (Hyprland draws its border/rounding/shadow/blur). qs ipc call panel focus.
     FocusPanel {}

@@ -103,24 +103,40 @@ Item {
 
     component ActionButton: Rectangle {
         id: ab
+        property string icon: ""
         property string label: ""
         property color accent: Theme.purple
         signal clicked
-        implicitWidth: albl.implicitWidth + 28
+        implicitWidth: actionRow.implicitWidth + 24
         implicitHeight: 34
         radius: Theme.chip
         color: abma.containsMouse ? Theme.withAlpha(ab.accent, 0.22) : Theme.withAlpha(ab.accent, 0.12)
         border.color: ab.accent
         border.width: 1
-        StyledText {
-            id: albl
+
+        RowLayout {
+            id: actionRow
             anchors.centerIn: parent
-            text: ab.label
-            color: ab.accent
-            font.family: Theme.fontMono
-            font.pixelSize: 13
-            font.bold: true
+            spacing: 7
+
+            MaterialIcon {
+                visible: ab.icon.length > 0
+                text: ab.icon
+                color: ab.accent
+                font.pixelSize: 17
+                Layout.preferredWidth: 17
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            StyledText {
+                text: ab.label
+                color: ab.accent
+                font.family: Theme.fontMono
+                font.pixelSize: 13
+                font.bold: true
+            }
         }
+
         MouseArea {
             id: abma
             anchors.fill: parent
@@ -168,20 +184,34 @@ Item {
                 spacing: 10
 
                 Rectangle {
-                    implicitWidth: backTxt.implicitWidth + 22
+                    implicitWidth: backRow.implicitWidth + 18
                     implicitHeight: 28
                     radius: Theme.pill
                     color: backMa.containsMouse ? Theme.hov : Theme.s1
                     border.color: Theme.bd
                     border.width: 1
-                    StyledText {
-                        id: backTxt
+
+                    RowLayout {
+                        id: backRow
                         anchors.centerIn: parent
-                        text: "‹ back"
-                        color: Theme.subtext0
-                        font.family: Theme.fontMono
-                        font.pixelSize: 13
+                        spacing: 5
+
+                        MaterialIcon {
+                            text: "arrow_back"
+                            color: Theme.subtext0
+                            font.pixelSize: 16
+                            Layout.preferredWidth: 16
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+
+                        StyledText {
+                            text: "back"
+                            color: Theme.subtext0
+                            font.family: Theme.fontMono
+                            font.pixelSize: 13
+                        }
                     }
+
                     MouseArea {
                         id: backMa
                         anchors.fill: parent
@@ -372,11 +402,12 @@ Item {
                             required property var modelData
                             Layout.fillWidth: true
                             spacing: 8
-                            StyledText {
-                                text: "\u{F0F1F}"
+                            MaterialIcon {
+                                text: "notes"
                                 color: Theme.comment
-                                font.family: Theme.fontMono
-                                font.pixelSize: 12
+                                font.pixelSize: 16
+                                Layout.preferredWidth: 18
+                                Layout.alignment: Qt.AlignTop
                             }
                             StyledText {
                                 Layout.fillWidth: true
@@ -408,7 +439,8 @@ Item {
                     Layout.topMargin: 2
                     spacing: 10
                     ActionButton {
-                        label: "▶ Start block"
+                        icon: "play_arrow"
+                        label: "Start block"
                         accent: Theme.purple
                         onClicked: {
                             if (page.task) {
@@ -418,7 +450,8 @@ Item {
                         }
                     }
                     ActionButton {
-                        label: "✓ Done"
+                        icon: "check"
+                        label: "Done"
                         accent: Theme.green
                         onClicked: {
                             if (page.task) {
@@ -429,7 +462,8 @@ Item {
                     }
                     Item { Layout.fillWidth: true }
                     ActionButton {
-                        label: "\u{F05E8} Delete"
+                        icon: "delete"
+                        label: "Delete"
                         accent: Theme.red
                         onClicked: {
                             if (page.task) {

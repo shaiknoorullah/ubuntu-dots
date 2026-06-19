@@ -8,9 +8,9 @@ pragma ComponentBehavior: Bound
 // radius) holding three clusters, justified space-between:
 //
 //   LEFT   project · branch · context — "where the work lives"
-//            .proj (purple)  ⎇ branch (green)  context·region (muted)
+//            project (purple) · branch (green) · context·region (muted)
 //   CENTER active task + live elapsed
-//            ⏱ active · <task> · <elapsed cyan>          (ActiveTask service)
+//            active · <task> · <elapsed cyan>            (ActiveTask service)
 //   RIGHT  focus-score ring · streak · pips · coffee/walks · encouragement
 //            (Stats service) — SHAME-FREE: positive framing only, no red/scold.
 //
@@ -59,9 +59,22 @@ PanelWindow {
         width: Math.min(1860, root.width - 60)
         height: 30
         radius: Theme.pill
-        color: Theme.glass2
+        color: Theme.panelStrong
         border.width: 1
-        border.color: Theme.bd
+        border.color: Theme.edge
+        clip: true
+
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            color: "transparent"
+            gradient: Gradient {
+                orientation: Gradient.Vertical
+                GradientStop { position: 0.0; color: Theme.shine }
+                GradientStop { position: 0.58; color: "transparent" }
+                GradientStop { position: 1.0; color: Theme.shade }
+            }
+        }
 
         // Calm slide-down + fade when the left bar is summoned.
         opacity: BarState.leftOpen ? 0 : 1
@@ -93,18 +106,38 @@ PanelWindow {
             spacing: 14
 
             // project (accented by current context)
-            StyledText {
-                text: ` ${Project.name}`
-                color: Ctx.accent
-                font.family: Theme.fontMono
-                font.pixelSize: 12
-                font.bold: true
+            RowLayout {
+                spacing: 6
+                MaterialIcon {
+                    text: "folder_open"
+                    color: Ctx.accent
+                    font.pixelSize: 15
+                    Layout.preferredWidth: 15
+                    Layout.alignment: Qt.AlignVCenter
+                }
+                StyledText {
+                    text: Project.name
+                    color: Ctx.accent
+                    font.family: Theme.fontMono
+                    font.pixelSize: 12
+                    font.bold: true
+                }
             }
-            StyledText {
-                text: `⎇ ${Project.branch}`
-                color: Theme.green
-                font.family: Theme.fontMono
-                font.pixelSize: 12
+            RowLayout {
+                spacing: 6
+                MaterialIcon {
+                    text: "fork_right"
+                    color: Theme.green
+                    font.pixelSize: 15
+                    Layout.preferredWidth: 15
+                    Layout.alignment: Qt.AlignVCenter
+                }
+                StyledText {
+                    text: Project.branch
+                    color: Theme.green
+                    font.family: Theme.fontMono
+                    font.pixelSize: 12
+                }
             }
             StyledText {
                 text: `${Ctx.ctx} · ${Project.region}`
@@ -121,11 +154,21 @@ PanelWindow {
             anchors.centerIn: parent
             spacing: 14
 
-            StyledText {
-                text: "⏱ active"
-                color: Theme.comment
-                font.family: Theme.fontMono
-                font.pixelSize: 12
+            RowLayout {
+                spacing: 6
+                MaterialIcon {
+                    text: "timer"
+                    color: Theme.comment
+                    font.pixelSize: 15
+                    Layout.preferredWidth: 15
+                    Layout.alignment: Qt.AlignVCenter
+                }
+                StyledText {
+                    text: "active"
+                    color: Theme.comment
+                    font.family: Theme.fontMono
+                    font.pixelSize: 12
+                }
             }
             StyledText {
                 text: ActiveTask.task
@@ -171,12 +214,22 @@ PanelWindow {
                 }
             }
 
-            // streak (flame + day count) — never "broken", always a count
-            StyledText {
-                text: `🔥 ${Stats.streak}-day`
-                color: Theme.comment
-                font.family: Theme.fontMono
-                font.pixelSize: 12
+            // streak — never "broken", always a count
+            RowLayout {
+                spacing: 6
+                MaterialIcon {
+                    text: "local_fire_department"
+                    color: Theme.comment
+                    font.pixelSize: 15
+                    Layout.preferredWidth: 15
+                    Layout.alignment: Qt.AlignVCenter
+                }
+                StyledText {
+                    text: `${Stats.streak}-day`
+                    color: Theme.comment
+                    font.family: Theme.fontMono
+                    font.pixelSize: 12
+                }
             }
 
             // pips — a tiny 4-pip rhythm strip (filled up to streak%4-ish).
@@ -198,11 +251,40 @@ PanelWindow {
             }
 
             // coffee + walks tallies
-            StyledText {
-                text: `☕ ${Stats.coffee} · 󰖃 ${Stats.walks} walks`
-                color: Theme.comment
-                font.family: Theme.fontMono
-                font.pixelSize: 12
+            RowLayout {
+                spacing: 6
+                MaterialIcon {
+                    text: "local_cafe"
+                    color: Theme.comment
+                    font.pixelSize: 15
+                    Layout.preferredWidth: 15
+                    Layout.alignment: Qt.AlignVCenter
+                }
+                StyledText {
+                    text: `${Stats.coffee}`
+                    color: Theme.comment
+                    font.family: Theme.fontMono
+                    font.pixelSize: 12
+                }
+                StyledText {
+                    text: "·"
+                    color: Theme.comment
+                    font.family: Theme.fontMono
+                    font.pixelSize: 12
+                }
+                MaterialIcon {
+                    text: "directions_walk"
+                    color: Theme.comment
+                    font.pixelSize: 15
+                    Layout.preferredWidth: 15
+                    Layout.alignment: Qt.AlignVCenter
+                }
+                StyledText {
+                    text: `${Stats.walks} walks`
+                    color: Theme.comment
+                    font.family: Theme.fontMono
+                    font.pixelSize: 12
+                }
             }
 
             // encouragement — warm, never scolding (script guarantees this)

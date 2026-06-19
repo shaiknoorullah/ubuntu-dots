@@ -80,13 +80,14 @@ Item {
                             anchors.rightMargin: 12
                             spacing: 11
 
-                            StyledText {
-                                text: row.isAll ? "\u{F0770}" : "\u{F024B}"
+                            MaterialIcon {
+                                text: row.isAll ? "checklist" : "folder_open"
                                 color: row.isAll
                                     ? Theme.cyan
                                     : (row.hovered ? Theme.purple : Theme.comment)
-                                font.family: Theme.fontMono
-                                font.pixelSize: row.isAll ? 15 : 14
+                                font.pixelSize: row.isAll ? 18 : 17
+                                Layout.preferredWidth: 20
+                                Layout.alignment: Qt.AlignVCenter
                             }
                             StyledText {
                                 Layout.fillWidth: true

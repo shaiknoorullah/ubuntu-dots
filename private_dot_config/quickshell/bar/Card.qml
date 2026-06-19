@@ -26,6 +26,19 @@ StyledRect {
     color: fill
     border.width: 1
     border.color: accentBorder
+    clip: true
+
+    Rectangle {
+        anchors.fill: parent
+        radius: parent.radius
+        color: "transparent"
+        gradient: Gradient {
+            orientation: Gradient.Vertical
+            GradientStop { position: 0.0; color: Theme.withAlpha(Theme.fg, 0.035) }
+            GradientStop { position: 0.55; color: "transparent" }
+            GradientStop { position: 1.0; color: Theme.withAlpha("#000000", 0.08) }
+        }
+    }
 
     ColumnLayout {
         id: col
@@ -46,7 +59,7 @@ StyledRect {
                 color: Theme.comment
                 font.family: Theme.fontMono
                 font.pixelSize: 10
-                font.letterSpacing: 1.5
+                font.letterSpacing: 0
                 Layout.fillWidth: true
             }
             StyledText {

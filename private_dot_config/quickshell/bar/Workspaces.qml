@@ -64,6 +64,9 @@ RowLayout {
             color: active ? Theme.a18
                 : occupied ? Theme.s2
                 : Theme.s1
+            border.width: active || occupied ? 1 : 0
+            border.color: active ? Theme.withAlpha(Theme.ctxAccent, 0.46) : Theme.bd
+            clip: true
 
             // Calm width morph as focus moves between workspaces.
             Behavior on implicitWidth {
@@ -114,7 +117,7 @@ RowLayout {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
-                onClicked: Hypr.dispatch(`hl.dsp.focus({ workspace = ${chip.ws} })`)
+                onClicked: Hypr.dispatch(`workspace ${chip.ws}`)
             }
         }
     }

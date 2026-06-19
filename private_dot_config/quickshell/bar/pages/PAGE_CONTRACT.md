@@ -43,12 +43,14 @@ Item {
 ## Theme (`Theme.*`)
 Colors: `base bg fg comment surface0 surface1 surface2 subtext0 purple pink blue cyan
 green orange red yellow glass glass2 s1 s2 bd hov ctxAccent`. Helper `Theme.withAlpha(c, a)`.
-Fonts: **always `font.family: Theme.fontMono`**. Radii: `rad`(16) `pill`(99) `chip`(9).
+Fonts: text uses `font.family: Theme.fontMono`; UI icons use `MaterialIcon { text: "icon_name" }`
+with Material Symbols Rounded ligature names. Radii: `rad`(16) `pill`(99) `chip`(9).
 Dracula palette. Priority colors: H=red, M=orange, L=cyan (suggested).
 
 ## Components (`import qs.components`)
 - **StyledText** = a `Text` (set `text`, `color`, `font.family: Theme.fontMono`, `font.pixelSize`,
-  `elide`). **StyledRect** = a `Rectangle`. Otherwise use plain QtQuick
+  `elide`). **MaterialIcon** = a Material Symbols Rounded icon; set `text`, `color`,
+  and `font.pixelSize`. **StyledRect** = a `Rectangle`. Otherwise use plain QtQuick
   `Rectangle`/`MouseArea`/`Repeater`/`Flickable`/`ListView`/`TextInput`/`ColumnLayout`/`RowLayout`.
 
 ## Conventions

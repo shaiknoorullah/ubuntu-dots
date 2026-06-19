@@ -22,6 +22,14 @@ FloatingWindow {
     visible: BarState.wallpaperOpen
 
     property string filter: ""   // "" = all collections
+    readonly property var swatches: [
+        Theme.purple,
+        Theme.pink,
+        Theme.cyan,
+        Theme.green,
+        Theme.orange,
+        Theme.yellow
+    ]
     readonly property var shown: root.filter
         ? (Wall.items || []).filter(w => w.collection === root.filter)
         : (Wall.items || [])
@@ -41,12 +49,42 @@ FloatingWindow {
         RowLayout {
             Layout.fillWidth: true
             spacing: 10
-            StyledText {
-                text: "\u{F1043}  Wallpaper"
-                color: Theme.fg
-                font.family: Theme.fontMono
-                font.pixelSize: 16
-                font.bold: true
+            RowLayout {
+                spacing: 8
+
+                MaterialIcon {
+                    text: "wallpaper"
+                    color: Theme.purple
+                    font.pixelSize: 21
+                    Layout.preferredWidth: 21
+                    Layout.alignment: Qt.AlignVCenter
+                }
+
+                StyledText {
+                    text: "Wallpaper"
+                    color: Theme.fg
+                    font.family: Theme.fontMono
+                    font.pixelSize: 16
+                    font.bold: true
+                }
+            }
+            RowLayout {
+                spacing: 5
+
+                Repeater {
+                    model: root.swatches
+
+                    Rectangle {
+                        required property var modelData
+
+                        Layout.preferredWidth: 12
+                        Layout.preferredHeight: 12
+                        radius: width / 2
+                        color: modelData
+                        border.width: 1
+                        border.color: Theme.withAlpha(Theme.fg, 0.18)
+                    }
+                }
             }
             Item { Layout.fillWidth: true }
             StyledText {
@@ -126,9 +164,17 @@ FloatingWindow {
                     anchors.fill: parent
                     anchors.margins: 6
                     radius: 12
-                    color: "transparent"
-                    border.width: cell.GridView.isCurrentItem ? 2 : 0
-                    border.color: Theme.purple
+                    color: Theme.panelSoft
+                    border.width: cell.GridView.isCurrentItem ? 2 : 1
+                    border.color: cell.GridView.isCurrentItem ? Theme.purple : Theme.bd
+                    scale: cell.GridView.isCurrentItem ? 1.015 : 1
+
+                    Behavior on scale {
+                        NumberAnimation {
+                            duration: Theme.durFast
+                            easing.type: Easing.OutCubic
+                        }
+                    }
 
                     ClippingRectangle {
                         anchors.fill: parent

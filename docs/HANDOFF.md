@@ -18,6 +18,8 @@ prayer-scaffolded focus blocks, wallpaper system. i3/X11 is the fallback session
 2. **quickshell runs inside an Arch `distrobox`** (`arch`) — Ubuntu's Qt 6.4 < the
    6.6+ quickshell needs. Host Wayland/nvidia/fonts pass through. The QML is
    `private_dot_config/quickshell/`. It renders on the host Hyprland.
+   Quickshell UI icons use Material Symbols Rounded; `quickshell-setup`
+   installs that TTF into `~/.local/share/fonts`.
 3. **quickshell's `Process` PATH must include `~/.local/bin`** (set in
    `quickshell-launch`). If it's missing, NO `eww-*.sh`/`adhd-*.sh`/`wall.sh` runs
    and every widget silently shows defaults. This caused hours of confusion.
@@ -57,9 +59,11 @@ Bash needs `dangerouslyDisableSandbox: true` for anything touching docker/distro
 Commit only when asked; end commit msgs with the Co-Authored-By trailer. Push only when asked.
 
 ## The shell (what's built)
-- **3 bars** (`bar/TopBar/BottomBar/LeftBar.qml`): top = context · workspaces ·
-  **Dynamic Island** (real MPRIS cover art, hover-peek/click-pin) · clock; bottom =
-  gamified stats; left drawer (`Super+A`) = BIG live focus timer + salah runway + tasks.
+- **3 bars + right panel** (`bar/TopBar/BottomBar/LeftBar/RightPanel.qml`): top =
+  context · workspaces · **Dynamic Island** (real MPRIS cover art,
+  hover-peek/click-pin) · clickable clock/system pill; bottom = gamified stats;
+  left drawer (`Super+A`) = BIG live focus timer + salah runway + tasks; right
+  panel = End-4-style quick toggles/sliders · notifications · calendar.
 - **FocusPanel** (`bar/FocusPanel.qml`) — multi-page taskwarrior front-end, a real
   **FloatingWindow** (Hyprland draws its border/rounding/shadow/blur; windowrules
   match `title:focus-panel` → float/center/size/stay_focused). `Super+Shift+Return`
@@ -75,6 +79,15 @@ Commit only when asked; end commit msgs with the Co-Authored-By trailer. Push on
   tags from host snapshot), `TaskActions` (write API via host bridge), `PanelState`
   (nav + sel + IPC), `BarState` (open/close + IPC), `Wall`, `Theme` (Dracula),
   `Focus`/`ActiveTask`/`Salah`/`Players`/`Ctx`/`Stats`/etc.
+- Icon convention: quickshell text uses `Theme.fontMono`; shell/UI icons use
+  `MaterialIcon { text: "material_symbol_name" }`. Rofi/app launcher icons are
+  separate GTK icons and currently use Adwaita.
+- Right panel: click the top-right pill or `~/.local/bin/qs-ipc call quickpanel
+  toggle`. Audio/caffeine are native Quickshell services. Bluetooth and notification
+  controls run through `adhd-bluetooth.sh`/`adhd-notifs.sh`, which call host tools
+  with `systemd-run --user --pipe` because the Arch distrobox cannot see the host
+  system bus directly. Notification backend order: SwayNC (current owner on this
+  machine) → dunst → `Notifs.qml` native fallback.
 
 ## Host bridges (quickshell → host action)
 | Request file (`~/.cache/adhd/`) | systemd path unit | actuator | does |

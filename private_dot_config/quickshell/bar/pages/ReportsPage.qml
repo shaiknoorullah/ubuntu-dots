@@ -231,11 +231,12 @@ Item {
                             anchors.leftMargin: 11
                             anchors.rightMargin: 11
                             spacing: 10
-                            StyledText {
-                                text: row.section.completed ? "\u{F0E1E}" : "\u{F0764}"
+                            MaterialIcon {
+                                text: row.section.completed ? "check_circle" : "radio_button_unchecked"
                                 color: row.section.completed ? Theme.green : row.section.accent
-                                font.family: Theme.fontMono
-                                font.pixelSize: 12
+                                font.pixelSize: 17
+                                Layout.preferredWidth: 18
+                                Layout.alignment: Qt.AlignVCenter
                             }
                             StyledText {
                                 Layout.fillWidth: true

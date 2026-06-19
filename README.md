@@ -17,9 +17,10 @@ center — all in hard **Dracula**.
 - **Compositor** — Hyprland 0.55 (Wayland), configured in **Lua**
   (`hyprland.lua`; 0.55 dropped the old hyprlang `.conf`). Compositor blur gives
   real glass on the bars. NVIDIA (RTX 4090) proprietary driver.
-- **Shell** — a 3-bar **quickshell** (QtQuick) shell: a top bar
-  (context · workspaces · **Dynamic Island** media notch · clock), a bottom
-  context/stats bar, and a summoned left "what am I chasing" drawer.
+- **Shell** — a **quickshell** (QtQuick) shell: a top bar
+  (context · workspaces · **Dynamic Island** media notch · clock/system pill), a
+  bottom context/stats bar, a summoned left "what am I chasing" drawer, and an
+  End-4-inspired right system panel.
 - **Focus engine** — taskwarrior + timewarrior + prayer-scaffolded Flowtime; a
   multi-page **focus/task panel** (`Super+Shift+Return`) to start blocks and
   manage every task field, fully keyboard-navigable.
@@ -65,6 +66,13 @@ Hyprland as layer-shell surfaces.
   Tags, Reports. Keyboard: `Tab`/`1–5` switch pages, `↑↓`/`jk` move, `Enter`
   acts, `Esc` closes.
 - **Left drawer** (`Super+A`) — BIG live block timer, salah runway, task list.
+- **Right system panel** — click the top-right pill, or run
+  `qs-ipc call quickpanel toggle`. Layout follows End-4's right sidebar pattern:
+  quick toggles/sliders at top, notifications in the middle, calendar at bottom.
+  Audio/caffeine use native Quickshell services; Bluetooth and notification controls run
+  through host-side `systemd-run --user --pipe` bridges because Quickshell itself
+  runs in a distrobox. Notifications prefer host SwayNC, then host `dunstctl`,
+  then Quickshell's native notification server.
 
 ### Key bindings (Hyprland)
 | Key | Action |
@@ -106,7 +114,9 @@ pink `#ff79c6`, cyan `#8be9fd`, green `#50fa7b`, orange `#ff9e3b`, red `#ff4d4d`
 yellow `#f5d547`), defined once in `.chezmoidata.yaml`. Context accents:
 work=purple · lab=pink · agents=cyan · personal=green. Change a hex + `chezmoi
 apply` → every templated config (hyprland.lua borders, quickshell theme, kitty)
-updates. Fonts: **JetBrainsMono Nerd Font** everywhere, Noto for CJK/emoji.
+updates. Fonts: **JetBrainsMono Nerd Font** for shell text, **Material Symbols
+Rounded** for quickshell UI icons, Noto for CJK/emoji. GTK/app icons remain
+separate: rofi currently uses **Adwaita** via `icon-theme`.
 
 ## Secrets
 
@@ -119,7 +129,7 @@ back it up to your password manager** (losing it = unrecoverable secrets).
 - ✅ **Foundation** — chezmoi adopted, secrets encrypted, Dracula palette.
 - ✅ **Hyprland (Wayland)** — Lua config, blur/glass, NVIDIA fixed, JetBrainsMono.
 - ✅ **quickshell 3-bar shell** — top/bottom/left bars, Dynamic Island (real
-  cover art), live data via the host bridge.
+  cover art), right system panel, live data via native services/host bridges.
 - ✅ **ADHD focus loop** — prayer-scaffolded Flowtime, live BIG timer.
 - ✅ **Focus/task panel** — multi-page taskwarrior front-end, full keyboard nav.
 - ⏭️ Next — master AI agent (model-switching), VPS data plane, work integrations,

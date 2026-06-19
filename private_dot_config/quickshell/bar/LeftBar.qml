@@ -115,10 +115,22 @@ PanelWindow {
         width: root.panelWidth
 
         radius: Theme.rad
-        color: Theme.glass2
+        color: Theme.panelStrong
         border.width: 1
-        border.color: Theme.bd
+        border.color: Theme.edge
         clip: true
+
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            color: "transparent"
+            gradient: Gradient {
+                orientation: Gradient.Vertical
+                GradientStop { position: 0.0; color: Theme.shine }
+                GradientStop { position: 0.22; color: "transparent" }
+                GradientStop { position: 1.0; color: Theme.shade }
+            }
+        }
 
         // Eat clicks on the panel so they don't bubble to the click-away.
         MouseArea {
@@ -207,12 +219,15 @@ PanelWindow {
                 // ActiveTask.elapsed. Counts UP (Flowtime), never down.
                 StyledText {
                     Layout.topMargin: 2
+                    Layout.fillWidth: true
                     text: ActiveTask.active ? ActiveTask.elapsed : "00:00:00"
                     color: Theme.fg
                     font.family: Theme.fontMono
                     font.pixelSize: 48
+                    minimumPixelSize: 34
+                    fontSizeMode: Text.Fit
                     font.bold: true
-                    font.letterSpacing: -2
+                    font.letterSpacing: 0
                 }
 
                 // What the block is for (the active task).
@@ -352,7 +367,7 @@ PanelWindow {
                         model: [
                             { label: " Gemini 2.5", on: true },
                             { label: " Claude", on: false },
-                            { label: "󰧑 local", on: false },
+                            { label: "local", on: false },
                             { label: "NotebookLM", on: false }
                         ]
                         StyledRect {
@@ -446,13 +461,14 @@ PanelWindow {
                                 anchors.rightMargin: 8
                                 spacing: 10
 
-                                // active = filled dot; pending = hollow box glyph
-                                StyledText {
-                                    text: taskRow.modelData.active ? "" : "󰄱"
+                                // active = play circle; pending = unchecked circle
+                                MaterialIcon {
+                                    text: taskRow.modelData.active ? "play_circle" : "radio_button_unchecked"
                                     color: taskRow.modelData.active
                                         ? Theme.purple : Theme.comment
-                                    font.family: Theme.fontMono
-                                    font.pixelSize: 12
+                                    font.pixelSize: 17
+                                    Layout.preferredWidth: 18
+                                    Layout.alignment: Qt.AlignVCenter
                                 }
                                 StyledText {
                                     Layout.fillWidth: true

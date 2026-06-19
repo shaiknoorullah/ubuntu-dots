@@ -5,7 +5,7 @@ pragma Singleton
 //
 // Wraps `eww-vol.sh` which prints:  {"vol":62,"muted":false}
 // Exposes `vol` (0–100 int) and `muted` (bool). The top-bar right pill renders
-// a Nerd-Font speaker glyph + the percentage, swapping to a muted glyph when
+// a Material Symbols volume icon + the percentage, swapping to volume_off when
 // `muted` is true.
 //
 // Polled every 2 s. Volume changes are user-driven and bursty; a short poll is

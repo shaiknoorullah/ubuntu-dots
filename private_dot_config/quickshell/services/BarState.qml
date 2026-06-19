@@ -35,8 +35,29 @@ Singleton {
         root.leftOpen = false;
     }
 
+    // Is the End-4-style right system panel visible?
+    property bool quickPanelOpen: false
+
+    function toggleQuickPanel(): void {
+        root.quickPanelOpen = !root.quickPanelOpen;
+        if (root.quickPanelOpen) {
+            root.leftOpen = false;
+            root.paletteOpen = false;
+            root.wallpaperOpen = false;
+        }
+    }
+    function openQuickPanel(): void {
+        root.quickPanelOpen = true;
+        root.leftOpen = false;
+        root.paletteOpen = false;
+        root.wallpaperOpen = false;
+    }
+    function closeQuickPanel(): void {
+        root.quickPanelOpen = false;
+    }
+
     // IPC so a Hyprland keybind can summon the bar:
-    //   bind = SUPER, SPACE, exec, qs ipc call leftbar toggle
+    //   hl.bind(mod .. " + A", hl.dsp.exec_cmd("~/.local/bin/qs-ipc call leftbar toggle"))
     IpcHandler {
         target: "leftbar"
 
@@ -48,6 +69,22 @@ Singleton {
         }
         function close(): void {
             root.closeLeft();
+        }
+    }
+
+    // Top-right system panel:
+    //   qs ipc call quickpanel toggle
+    IpcHandler {
+        target: "quickpanel"
+
+        function toggle(): void {
+            root.toggleQuickPanel();
+        }
+        function open(): void {
+            root.openQuickPanel();
+        }
+        function close(): void {
+            root.closeQuickPanel();
         }
     }
 

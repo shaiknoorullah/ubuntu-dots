@@ -35,11 +35,11 @@ FloatingWindow {
         "reports": "pages/ReportsPage.qml"
     })
     readonly property var navItems: [
-        { "id": "focus", "label": "Focus", "glyph": "\u{F0EBB}" },
-        { "id": "tasks", "label": "Tasks", "glyph": "\u{F05B7}" },
-        { "id": "projects", "label": "Projects", "glyph": "\u{F0256}" },
-        { "id": "tags", "label": "Tags", "glyph": "\u{F04FA}" },
-        { "id": "reports", "label": "Reports", "glyph": "\u{F0379}" }
+        { "id": "focus", "label": "Focus", "icon": "center_focus_strong" },
+        { "id": "tasks", "label": "Tasks", "icon": "checklist" },
+        { "id": "projects", "label": "Projects", "icon": "folder_open" },
+        { "id": "tags", "label": "Tags", "icon": "sell" },
+        { "id": "reports", "label": "Reports", "icon": "bar_chart" }
     ]
 
     onVisibleChanged: if (visible) {
@@ -142,12 +142,13 @@ FloatingWindow {
                                 anchors.rightMargin: 12
                                 spacing: 11
 
-                                StyledText {
-                                    text: navRow.modelData.glyph
+                                MaterialIcon {
+                                    text: navRow.modelData.icon
                                     color: PanelState.page === navRow.modelData.id
                                         ? Theme.purple : Theme.comment
-                                    font.family: Theme.fontMono
-                                    font.pixelSize: 15
+                                    font.pixelSize: 18
+                                    Layout.preferredWidth: 18
+                                    Layout.alignment: Qt.AlignVCenter
                                 }
                                 StyledText {
                                     Layout.fillWidth: true
